@@ -1,0 +1,83 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstractions", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{48F7E800-2637-4B28-956D-36834CF83142}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.Core", "Ict.Service.PointSale.Core\Ict.Service.PointSale.Core.csproj", "{DFFE7079-C6A6-4B98-ADC7-CAC4FDED2C96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.DataBase", "Ict.Service.PointSale.DataBase\Ict.Service.PointSale.DataBase.csproj", "{6DB217BE-227B-46EF-A231-41A4E058B9FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.Models", "Ict.Service.PointSale.Models\Ict.Service.PointSale.Models.csproj", "{03F12975-2E23-4FF6-8168-D2CACD498EFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.Repository", "Ict.Service.PointSale.Repository\Ict.Service.PointSale.Repository.csproj", "{DE78AF4D-87A1-4690-BA66-581282B999B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.RestAPI", "Ict.Service.PointSale.RestAPI\Ict.Service.PointSale.RestAPI.csproj", "{819E89E6-51B5-46A5-9C07-5AE9DB0B3CA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.API.Abstractions", "Ict.Service.PointSale.API.Abstractions\Ict.Service.PointSale.API.Abstractions.csproj", "{1C31608E-1FCF-482F-9454-51A7D3A7AEBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.Core.Abstractions", "Ict.Service.PointSale.Core.Abstractions\Ict.Service.PointSale.Core.Abstractions.csproj", "{25D0A8EF-7A09-40C4-A646-E7A6E8A34A24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.Repository.Abstractions", "Ict.Service.PointSale.Repository.Abstractions\Ict.Service.PointSale.Repository.Abstractions.csproj", "{995A23A4-DC72-4BAB-A24A-3C701ED0FF98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Service.PointSale.Connector.File", "Ict.Service.PointSale.Connector.File\Ict.Service.PointSale.Connector.File.csproj", "{FF893088-17E5-4564-900B-59C439D2518F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DFFE7079-C6A6-4B98-ADC7-CAC4FDED2C96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFFE7079-C6A6-4B98-ADC7-CAC4FDED2C96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFFE7079-C6A6-4B98-ADC7-CAC4FDED2C96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFFE7079-C6A6-4B98-ADC7-CAC4FDED2C96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DB217BE-227B-46EF-A231-41A4E058B9FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DB217BE-227B-46EF-A231-41A4E058B9FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DB217BE-227B-46EF-A231-41A4E058B9FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DB217BE-227B-46EF-A231-41A4E058B9FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03F12975-2E23-4FF6-8168-D2CACD498EFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03F12975-2E23-4FF6-8168-D2CACD498EFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03F12975-2E23-4FF6-8168-D2CACD498EFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03F12975-2E23-4FF6-8168-D2CACD498EFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE78AF4D-87A1-4690-BA66-581282B999B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE78AF4D-87A1-4690-BA66-581282B999B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE78AF4D-87A1-4690-BA66-581282B999B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE78AF4D-87A1-4690-BA66-581282B999B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{819E89E6-51B5-46A5-9C07-5AE9DB0B3CA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{819E89E6-51B5-46A5-9C07-5AE9DB0B3CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{819E89E6-51B5-46A5-9C07-5AE9DB0B3CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{819E89E6-51B5-46A5-9C07-5AE9DB0B3CA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C31608E-1FCF-482F-9454-51A7D3A7AEBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C31608E-1FCF-482F-9454-51A7D3A7AEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C31608E-1FCF-482F-9454-51A7D3A7AEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C31608E-1FCF-482F-9454-51A7D3A7AEBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25D0A8EF-7A09-40C4-A646-E7A6E8A34A24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25D0A8EF-7A09-40C4-A646-E7A6E8A34A24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25D0A8EF-7A09-40C4-A646-E7A6E8A34A24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25D0A8EF-7A09-40C4-A646-E7A6E8A34A24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{995A23A4-DC72-4BAB-A24A-3C701ED0FF98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{995A23A4-DC72-4BAB-A24A-3C701ED0FF98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{995A23A4-DC72-4BAB-A24A-3C701ED0FF98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{995A23A4-DC72-4BAB-A24A-3C701ED0FF98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF893088-17E5-4564-900B-59C439D2518F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF893088-17E5-4564-900B-59C439D2518F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF893088-17E5-4564-900B-59C439D2518F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF893088-17E5-4564-900B-59C439D2518F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1C31608E-1FCF-482F-9454-51A7D3A7AEBF} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{25D0A8EF-7A09-40C4-A646-E7A6E8A34A24} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{995A23A4-DC72-4BAB-A24A-3C701ED0FF98} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{FF893088-17E5-4564-900B-59C439D2518F} = {48F7E800-2637-4B28-956D-36834CF83142}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {471323FF-5CCE-4C7E-AD4C-316B95D3F0B9}
+	EndGlobalSection
+EndGlobal

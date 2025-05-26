@@ -1,0 +1,6 @@
+@Ict.Service.PointSale.RestAPI_HostAddress = http://localhost:5263
+
+GET {{Ict.Service.PointSale.RestAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

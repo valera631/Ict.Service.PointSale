@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Ict.ApiProviderCore" Version="8.0.66" />
+    <PackageReference Include="Ict.ApiResultCore" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ict.Service.PointSale.API.Abstractions\Ict.Service.PointSale.API.Abstractions.csproj" />
+    <ProjectReference Include="..\Ict.Service.PointSale.Connector.File\Ict.Service.PointSale.Connector.File.csproj" />
+    <ProjectReference Include="..\Ict.Service.PointSale.Core.Abstractions\Ict.Service.PointSale.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\Ict.Service.PointSale.Core\Ict.Service.PointSale.Core.csproj" />
+    <ProjectReference Include="..\Ict.Service.PointSale.DataBase\Ict.Service.PointSale.DataBase.csproj" />
+    <ProjectReference Include="..\Ict.Service.PointSale.Models\Ict.Service.PointSale.Models.csproj" />
+    <ProjectReference Include="..\Ict.Service.PointSale.Repository\Ict.Service.PointSale.Repository.csproj" />
+  </ItemGroup>
+
+</Project>
