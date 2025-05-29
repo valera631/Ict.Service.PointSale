@@ -106,5 +106,60 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
             return operation;
 
         }
+
+
+        /// <summary>
+        /// Создает связь между оператором и торговой точки.
+        /// </summary>
+        [HttpPost("linkOperator")]
+        public async Task<ApiResult<Guid?>> LinkOperator(LinkOperatorRequest request)
+        {
+            var operation = ApiResult.CreateResult<Guid?>();
+            try
+            {
+                var pointSaleFullDto = new LinkOperatorDto
+                {
+                    PointSaleId = request.PointSaleId,
+                    OperatorId = request.OperatorId
+                };
+
+                var result = await _pointSaleService.LinkOperatorAsync(pointSaleFullDto);
+
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+        /// <summary>
+        /// Удаляет связь между оператором и организацией.
+        /// </summary>
+        [HttpDelete("unlinkOperator")]
+        public async Task<ApiResult<bool>> UnlinkOperatorFromOrganization(OperatorUnlinkRequest unlinkOperatorRequest)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var pointSaleFullDto = new OperatorUnlinkDto
+                {
+                    PointSaleId = unlinkOperatorRequest.PointSaleId,
+                    OperatorId = unlinkOperatorRequest.OperatorId
+                };
+                var result = await _pointSaleService.UnlinkOperatorAsync(pointSaleFullDto);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+
+            }
+            catch (Exception ex)
+            {
+
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
     }
 }

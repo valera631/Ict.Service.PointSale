@@ -77,5 +77,10 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         public int ChiefPositionId { get; set; }
 
         public string ChiefPositionName { get; set; } = "Должность не назначена";
+
+        /// <summary>
+        /// Операторы организации
+        /// </summary>
+        public List<Guid> OperatorIds { get; set; } = new List<Guid>(); // Добавляем для операторов
     }
 }

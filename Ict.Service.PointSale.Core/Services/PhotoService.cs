@@ -291,5 +291,57 @@ namespace Ict.Service.PointSale.Core.Services
             }
             return response;
         }
+
+        public async Task<OperationResult<List<Guid>>> DeletePhotoAsync(PhotosDeleteDto deletePhotosDto)
+        {
+            OperationResult<List<Guid>> response = new();
+            try
+            {
+                // Проверяем входные данные
+                if (deletePhotosDto == null || deletePhotosDto.PointSaleId == Guid.Empty || deletePhotosDto.PhotoIds == null || !deletePhotosDto.PhotoIds.Any())
+                {
+                    response.ErrorMessage = "Некорректные входные данные: организация или фотографии не указаны.";
+                    return response;
+                }
+
+                var photos = await _photoRepository.GetPhotosByIdsAsync(
+                   deletePhotosDto.PointSaleId,
+                   deletePhotosDto.PhotoIds
+                   );
+
+                 // Удаляем файлы из хранилища
+                List<Guid> deletedPhotoIds = new();
+                foreach (var photoId in photos.Data)
+                {
+                    var deleteRequest = new RequestFileDelete { FileId = photoId, IsDeleteAllChild = true };
+                    var deleteResponse = await _fileConnected.Delete(deleteRequest);
+                    if (!deleteResponse.IsSuccess)
+                    {
+                        response.ErrorMessage = deleteResponse.ErrorMessage;
+                        return response;
+                    }
+                    deletedPhotoIds.Add(photoId);
+                }
+
+                var deleteResult = await _photoRepository.DeletePhotosAsync(deletePhotosDto.PointSaleId,
+                    deletedPhotoIds);
+
+                if (!deleteResult.IsSuccess)
+                {
+                    response.ErrorMessage = deleteResult.ErrorMessage;
+                    return response;
+                }
+
+
+                response.Data = deleteResult.Data;
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+            return response;
+        }
     }
 }

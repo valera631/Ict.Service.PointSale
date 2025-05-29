@@ -92,6 +92,56 @@ namespace Ict.Service.PointSale.Core.Services
             return response;
         }
 
+        public async Task<OperationResult<Guid?>> LinkOperatorAsync(LinkOperatorDto linkOperatorRequest)
+        {
+            OperationResult<Guid?> response = new();
+            try
+            {
+
+                var addResult = await _pointSaleRepository.AddOperatorToPointSaleAsync(linkOperatorRequest);
+
+                if (!addResult.IsSuccess)
+                {
+                    response.ErrorMessage = "Не удалось добавить связь: организация или оператор не найдены.";
+                    return response;
+                }
+
+                response.Data = addResult.Data;
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+            return response;
+        }
+
+        public async Task<OperationResult<bool>> UnlinkOperatorAsync(OperatorUnlinkDto unlinkOperatorRequest)
+        {
+
+            OperationResult<bool> response = new();
+            try
+            {
+                var removeResult = await _pointSaleRepository.UnlinkOperatorAsync(unlinkOperatorRequest);
+
+                if (!removeResult.IsSuccess)
+                {
+                    response.ErrorMessage = "Не удалось удалить связь: организация или оператор не найдены.";
+                    return response;
+                }
+
+                response.Data = removeResult.Data;
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+           return response;
+        }
+
 
 
         /// <summary>

@@ -21,5 +21,17 @@ namespace Ict.Service.PointSale.Core.Abstractions.Interfaces
         Task<OperationResult<List<PointSaleResultFullDto>>> GetPointSaleByOwnerIdAsync(Guid ownerId);
 
         Task<OperationResult<PointSaleResultFullDto>> GetPointSaleAsync(PointSaleDate pointSaleDate);
+
+        /// <summary>
+        /// Добовляет связь между торговой точки и оператором.
+        /// </summary>
+        Task<OperationResult<Guid?>> LinkOperatorAsync(LinkOperatorDto linkOperatorRequest);
+
+        /// <summary>
+        /// Асинхронно удаляет связь между организацией и оператором.
+        /// </summary>
+        /// <param name="unlinkOperatorRequest"></param>
+        /// <returns></returns>
+        Task<OperationResult<bool>> UnlinkOperatorAsync(OperatorUnlinkDto unlinkOperatorRequest);
     }
 }

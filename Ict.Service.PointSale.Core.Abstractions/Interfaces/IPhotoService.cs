@@ -24,5 +24,7 @@ namespace Ict.Service.PointSale.Core.Abstractions.Interfaces
         /// Загружает фотографии в хранилище и связывает их с торговой точки.
         /// </summary>
         Task<OperationResult<bool>> AddPhotoAsync(PhotoContainerDto photoUploadDtos);
+
+        Task<OperationResult<List<Guid>>> DeletePhotoAsync(PhotosDeleteDto deletePhotosDto);
     }
 }

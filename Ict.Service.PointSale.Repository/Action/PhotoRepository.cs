@@ -120,6 +120,63 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
+        public async Task<OperationResult<List<Guid>>> DeletePhotosAsync(Guid pointSaleId, List<Guid> photoIds)
+        {
+            OperationResult<List<Guid>> response = new();
+            try
+            {
+                // Проверка, что organizationId указан
+                if (pointSaleId == Guid.Empty)
+                {
+                    response.ErrorMessage = "Идентификатор организации не указан.";
+                    return response;
+                }
+
+                // Проверка, что список photoIds не пуст
+                if (photoIds == null || !photoIds.Any())
+                {
+                    response.ErrorMessage = "Список идентификаторов фотографий пуст.";
+                    return response;
+                }
+
+                var pointSaleExist = await _pointSaleDbContext.PointSales
+                    .AnyAsync(p => p.PointSaleId == pointSaleId);
+
+                if (!pointSaleExist)
+                {
+                    response.ErrorMessage = "PointSale not found.";
+                    return response;
+                }
+
+                // Получаем фотографии, которые нужно удалить
+                var photosToDelete = await _pointSaleDbContext.Photos
+                    .Where(p => p.PointSaleId == pointSaleId && photoIds.Contains(p.PhotoId))
+                    .ToListAsync();
+
+                if (!photosToDelete.Any())
+                {
+                    response.ErrorMessage = "No photos found to delete.";
+                    return response;
+                }
+
+                // Удаляем фотографии
+                _pointSaleDbContext.Photos.RemoveRange(photosToDelete);
+
+
+                // Сохраняем изменения
+                await _pointSaleDbContext.SaveChangesAsync();
+
+                response.Data = photosToDelete.Select(op => op.PhotoId).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.Data = new List<Guid>();
+            }
+            return response;
+        }
+
         public async Task<OperationResult<Guid>> GetLogoAsync(Guid pointSaleId)
         {
             OperationResult<Guid> response = new();
@@ -144,6 +201,53 @@ namespace Ict.Service.PointSale.Repository.Action
             catch (Exception ex)
             {
 
+                response.ErrorMessage = ex.Message;
+            }
+            return response;
+        }
+
+        public async Task<OperationResult<List<Guid>>> GetPhotosByIdsAsync(Guid pointSaleId, List<Guid> photoIds)
+        {
+            OperationResult<List<Guid>> response = new();
+            try
+            {
+
+                // Проверка, что organizationId указан
+                if (pointSaleId == Guid.Empty)
+                {
+                    response.ErrorMessage = "Идентификатор организации не указан.";
+                    return response;
+                }
+
+                // Проверка, что список photoIds не пуст
+                if (photoIds == null || !photoIds.Any())
+                {
+                    response.ErrorMessage = "Список идентификаторов фотографий пуст.";
+                    return response;
+                }
+
+
+                var pointSaleExist = await _pointSaleDbContext.PointSales
+                    .AnyAsync(p => p.PointSaleId == pointSaleId);
+
+
+                if (!pointSaleExist)
+                {
+                    response.ErrorMessage = "PointSale not found.";
+                    return response;
+                }
+
+                var photos = await _pointSaleDbContext.Photos
+                    .Where(p => photoIds.Contains(p.PhotoId) &&
+                           (p.PointSaleId == pointSaleId))
+                    .Select(p => p.PhotoId)
+                    .ToListAsync();
+
+
+                response.Data = photos;
+            }
+            catch (Exception ex)
+            {
                 response.ErrorMessage = ex.Message;
             }
             return response;

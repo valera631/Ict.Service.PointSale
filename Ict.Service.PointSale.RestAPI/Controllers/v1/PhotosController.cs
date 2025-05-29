@@ -1,4 +1,5 @@
-﻿using Ict.ApiResults;
+﻿using System.Collections.Generic;
+using Ict.ApiResults;
 using Ict.Service.PointSale.API.Abstractions.Models.Photo;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
 using Ict.Service.PointSale.Models.Photo;
@@ -147,6 +148,32 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
                 }).ToList();
                 operation.Result = photos;
 
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+
+        [HttpDelete("DeletePhoto")]
+        public async Task<ApiResult<List<Guid>>> DeletePhoto(PhotosDeleteRequest photosDeleteRequest)
+        {
+            var operation = ApiResult.CreateResult<List<Guid>>();
+            try
+            {
+
+                var deletePhotoDto = new PhotosDeleteDto
+                {
+                    PhotoIds = photosDeleteRequest.ImageIds,
+                    PointSaleId = photosDeleteRequest.PointSaleId
+                };
+
+                var result = await _photoService.DeletePhotoAsync(deletePhotoDto);
+
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
             }
             catch (Exception ex)
             {

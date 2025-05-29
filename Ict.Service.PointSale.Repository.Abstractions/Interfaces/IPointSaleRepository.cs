@@ -24,6 +24,11 @@ namespace Ict.Service.PointSale.Repository.Abstractions.Interfaces
         /// <returns></returns>
         Task<OperationResult<List<PointSaleResultFullDto>>> GetPointSaleByOwnerIdAsync(Guid ownerId);
 
+
+        Task<OperationResult<Guid?>> AddOperatorToPointSaleAsync(LinkOperatorDto linkOperatorDto);
+
+        Task<OperationResult<bool>> UnlinkOperatorAsync(OperatorUnlinkDto unlinkOperatorDto);
+
         Task<OperationResult<PointSaleResultFullDto>> GetPointSaleByIdAsync(Guid pointSaleId ,DateOnly? dateOnly);
 
 

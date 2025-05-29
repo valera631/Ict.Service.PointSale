@@ -25,6 +25,60 @@ namespace Ict.Service.PointSale.Repository.Action
             _mapper = mapper;
         }
 
+        public async Task<OperationResult<Guid?>> AddOperatorToPointSaleAsync(LinkOperatorDto linkOperatorDto)
+        {
+            OperationResult<Guid?> response = new();
+            try
+            {
+                var pointSale =  _pointSaleDbContext.PointSales
+                    .Include(o => o.Operators)
+                    .FirstOrDefault(o => o.PointSaleId == linkOperatorDto.PointSaleId);
+
+                if (pointSale == null)
+                {
+                    response.ErrorMessage = $"Point sale with ID {linkOperatorDto.PointSaleId} not found.";
+                    return response;
+                }
+
+                // Проверяем, есть ли уже оператор с таким ID в точке продаж
+                if (pointSale.Operators.Any(o => o.OperatorId == linkOperatorDto.OperatorId))
+                {
+                    response.ErrorMessage = $"Operator with ID {linkOperatorDto.OperatorId} is already linked to point sale {linkOperatorDto.PointSaleId}.";
+                    return response;
+                }
+
+                // Проверяем, существует ли оператор
+                var operatorEntity = await _pointSaleDbContext.Operators
+                    .FirstOrDefaultAsync(op => op.OperatorId == linkOperatorDto.OperatorId);
+
+                // Если оператора нет, создаём его
+                if (operatorEntity == null)
+                {
+                    operatorEntity = new Operator
+                    {
+                        OperatorId = linkOperatorDto.OperatorId
+                        // Другие обязательные поля Operator, если есть, нужно заполнить
+                    };
+                    _pointSaleDbContext.Operators.Add(operatorEntity);
+                }
+
+                // Добавляем оператора в коллекцию
+                pointSale.Operators.Add(operatorEntity);
+
+
+                // Сохраняем изменения
+                await _pointSaleDbContext.SaveChangesAsync();
+
+                response.Data = linkOperatorDto.OperatorId;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+        }
+
         public async Task<OperationResult<bool>> CreatePointSale(PointSaleFullDto pointSaleDto)
         {
             OperationResult<bool> response = new();
@@ -95,7 +149,10 @@ namespace Ict.Service.PointSale.Repository.Action
                         Chief = x.Chiefs
                             .Where(c => c.OpenDate <= effectiveDate)
                             .OrderByDescending(c => c.OpenDate)
-                            .FirstOrDefault()
+                            .FirstOrDefault(),
+                        Operators = x.Operators // Добавляем операторов
+                            .Select(op => op.OperatorId)
+                            .ToList()
                     })
                     .AsNoTracking()
                     .FirstOrDefaultAsync();
@@ -172,6 +229,7 @@ namespace Ict.Service.PointSale.Repository.Action
                     EntryDate = pointSale.PointSaleEntity.EntryDate,
                     ClosingDate = pointSale.PointSaleEntity.ClosingDate,
                     DescriptionText = pointSale.Description?.DescriptionText ?? "No description",
+                    OperatorIds = pointSale.Operators,
 
                     // Информация о руководителе
                     ChiefId = pointSale.Chief?.ChiefId ?? Guid.Empty,
@@ -326,6 +384,46 @@ namespace Ict.Service.PointSale.Repository.Action
             }
 
             return response;
+        }
+
+        public async Task<OperationResult<bool>> UnlinkOperatorAsync(OperatorUnlinkDto unlinkOperatorDto)
+        {
+            OperationResult<bool> response = new();
+
+            try
+            {
+                var pointSale = _pointSaleDbContext.PointSales
+                    .Include(o => o.Operators)
+                    .FirstOrDefault(o => o.PointSaleId == unlinkOperatorDto.PointSaleId);
+
+                if (pointSale == null)
+                {
+                    response.ErrorMessage = $"Point sale with ID {unlinkOperatorDto.PointSaleId} not found.";
+                    return response;
+                }
+
+                var operatorEntity = pointSale.Operators
+                    .FirstOrDefault(o => o.OperatorId == unlinkOperatorDto.OperatorId);
+
+                if (operatorEntity == null)
+                {
+                    response.ErrorMessage = $"Operator with ID {unlinkOperatorDto.OperatorId} not found in point sale {unlinkOperatorDto.PointSaleId}.";
+                    return response;
+                }
+
+                pointSale.Operators.Remove(operatorEntity);
+
+                await _pointSaleDbContext.SaveChangesAsync();
+
+                response.Data = true;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+
         }
     }
 }
