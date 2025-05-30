@@ -2,6 +2,7 @@
 using Ict.ApiResults;
 using Ict.Service.PointSale.API.Abstractions.Models.PointSale;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
+using Ict.Service.PointSale.Models;
 using Ict.Service.PointSale.Models.PointSale;
 using Microsoft.AspNetCore.Mvc;
 
@@ -106,6 +107,57 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
             return operation;
 
         }
+
+
+        /// <summary>
+        /// Получает список точек пордаж по фильтру.
+        /// </summary>
+        [HttpGet("GetByFilter")]
+        public async Task<ApiResult<PaginatedResult<PointSaleResultFull>>> GetByFilter(PointSaleFilterRequest filterRequest)
+        {
+            var operation = ApiResult.CreateResult<PaginatedResult<PointSaleResultFull>>();
+            try
+            {
+
+                var filter = new PointSaleFilter
+                {
+                    Name = filterRequest.Name,
+                    IsApproved = filterRequest.IsApproved,
+                    HasOperator = filterRequest.HasOperator,
+                    HasNoBranches = filterRequest.HasNoBranches,
+                    PageNumber = filterRequest.PageNumber,
+                    PageSize = filterRequest.PageSize
+                };
+               
+                var results = await _pointSaleService.GetPointSalesByFilterAsync(filter);
+                if (!results.IsSuccess)
+                {
+                    operation.ErrorMessage = results.ErrorMessage;
+                    return operation;
+                }
+                else
+                {
+                    if (results.Data != null)
+                    {
+                        var paginatedResult = new PaginatedResult<PointSaleResultFull>
+                        {
+                            Items = _mapper.Map<List<PointSaleResultFull>>(results.Data.Items),
+                            PageNumber = results.Data.PageNumber,
+                            PageSize = results.Data.PageSize,
+                            TotalCount = results.Data.TotalCount
+                        };
+
+                        operation.Result = paginatedResult;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
 
 
         /// <summary>

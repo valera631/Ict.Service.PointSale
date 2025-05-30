@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
+using Ict.Service.PointSale.Core.Interfaces;
 using Ict.Service.PointSale.Models;
 using Ict.Service.PointSale.Models.PointSale;
 using Ict.Service.PointSale.Repository.Abstractions.Interfaces;
@@ -14,10 +15,12 @@ namespace Ict.Service.PointSale.Core.Services
     {
 
         private readonly IPointSaleRepository _pointSaleRepository;
+        private readonly IPointSaleSearch _pointSaleSearch;
 
-        public PointSaleService(IPointSaleRepository pointSaleRepository)
+        public PointSaleService(IPointSaleRepository pointSaleRepository, IPointSaleSearch pointSaleSearch)
         {
             _pointSaleRepository = pointSaleRepository;
+            _pointSaleSearch = pointSaleSearch;
         }
 
         public async Task<OperationResult<Guid>> CreatePointSaleAsync(PointSaleFullDto pointSaleFullDto)
@@ -90,6 +93,61 @@ namespace Ict.Service.PointSale.Core.Services
                 response.ErrorMessage = ex.Message;
             }
             return response;
+        }
+
+        public async Task<OperationResult<PaginatedResult<PointSaleResultFullDto>>> GetPointSalesByFilterAsync(PointSaleFilter filter)
+        {
+            var response = new OperationResult<PaginatedResult<PointSaleResultFullDto>>();
+            var result = new PaginatedResult<PointSaleResultFullDto>
+            {
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize
+            };
+            try
+            {
+                var pointSaleIdsResult = await _pointSaleSearch.GetFilteredPointsSaleAsync(filter);
+
+
+                if (!pointSaleIdsResult.IsSuccess)
+                {
+                    response.ErrorMessage = pointSaleIdsResult.ErrorMessage ?? "Ошибка при получении данных организаций.";
+                    return response;
+                }
+
+                // Если нет организаций, возвращаем успешный результат с пустым списком
+                if (pointSaleIdsResult.Data?.Items == null || !pointSaleIdsResult.Data.Items.Any())
+                {
+                    result.Items = new List<PointSaleResultFullDto>();
+                    response.Data = result;
+                    return response;
+                }
+
+                result.TotalCount = pointSaleIdsResult.Data.TotalCount;
+
+                // Список для хранения результатов по каждой организации
+                var pointSaleResults = new List<PointSaleResultFullDto>();
+
+                foreach (var pointSaleId in pointSaleIdsResult.Data.Items)
+                {
+                    // Получаем полную информацию о точке продаж по идентификатору
+                    var pointSaleResult = await _pointSaleRepository.GetPointSaleByIdAsync(pointSaleId, null);
+                    if (pointSaleResult.IsSuccess && pointSaleResult.Data != null)
+                    {
+                        pointSaleResults.Add(pointSaleResult.Data);
+                    }
+                }
+
+                result.Items = pointSaleResults;
+                response.Data = result;
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+
         }
 
         public async Task<OperationResult<Guid?>> LinkOperatorAsync(LinkOperatorDto linkOperatorRequest)

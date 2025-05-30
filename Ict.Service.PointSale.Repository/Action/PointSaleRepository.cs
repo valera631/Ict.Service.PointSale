@@ -119,6 +119,67 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
+        public async Task<OperationResult<PaginatedResult<Guid>>> GetFilteredPointsSaleAsync(PointSaleFilter filter)
+        {
+            var response = new OperationResult<PaginatedResult<Guid>>();
+            var result = new PaginatedResult<Guid>
+            {
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize
+            };
+            try
+            {
+                IQueryable<PointSaleActivity> query = _pointSaleDbContext.PointSaleActivities;
+
+                if (!string.IsNullOrEmpty(filter.Name))
+                {
+                    query = query.Where(activity => EF.Functions.Like(activity.NamePointSale, $"%{filter.Name}%"));
+                }
+
+                var pointQuery = query.Select(activity => activity.PointSales);
+
+                if (filter.IsApproved.HasValue)
+                {
+                    pointQuery = pointQuery.Where(point => point.IsAproved == filter.IsApproved.Value);
+                }
+
+                if (filter.HasOperator.HasValue)
+                {
+                    pointQuery = pointQuery.Where(entity =>
+                        filter.HasOperator.Value
+                            ? entity.Operators.Any()
+                            : !entity.Operators.Any());
+                }
+
+                result.TotalCount = await pointQuery
+               .Distinct()
+               .CountAsync();
+
+
+                var pointSaleIds = await pointQuery
+                   .Select(entity => entity.PointSaleId)
+                   .Distinct()
+                   .Skip((filter.PageNumber - 1) * filter.PageSize)
+                   .Take(filter.PageSize)
+                   .ToListAsync();
+
+                if(!pointSaleIds.Any())
+                {
+                    result.Items = new List<Guid>();
+                    response.Data = result;
+                    return response;
+                }
+
+                result.Items = pointSaleIds;
+                response.Data = result;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
+        }
 
         public async Task<OperationResult<PointSaleResultFullDto>> GetPointSaleByIdAsync(Guid pointSaleId, DateOnly? targetDate)
         {

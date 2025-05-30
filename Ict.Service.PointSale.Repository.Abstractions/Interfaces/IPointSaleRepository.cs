@@ -32,5 +32,8 @@ namespace Ict.Service.PointSale.Repository.Abstractions.Interfaces
         Task<OperationResult<PointSaleResultFullDto>> GetPointSaleByIdAsync(Guid pointSaleId ,DateOnly? dateOnly);
 
 
+        Task<OperationResult<PaginatedResult<Guid>>> GetFilteredPointsSaleAsync(PointSaleFilter filter);
+
+
     }
 }

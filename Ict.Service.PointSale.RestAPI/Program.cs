@@ -1,6 +1,7 @@
 using Ict.ApiProvider;
 using Ict.Service.PointSale.Connector.File;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
+using Ict.Service.PointSale.Core.Interfaces;
 using Ict.Service.PointSale.Core.Mapper;
 using Ict.Service.PointSale.Core.Services;
 using Ict.Service.PointSale.DataBase;
@@ -40,6 +41,7 @@ builder.Services.AddFileService();
 builder.Services.AddScoped<IPointSaleService, PointSaleService>();
 builder.Services.AddScoped<IDescriptionService, DescriptionService>();
 builder.Services.AddScoped<IDescriptionRepository, DescriptionRepository>();
+builder.Services.AddScoped<IPointSaleSearch, PointSaleSearch>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IPhotoRepository, PhotoRepository>();
 builder.Services.AddScoped<IReferencesService, ReferencesService>();

@@ -33,5 +33,8 @@ namespace Ict.Service.PointSale.Core.Abstractions.Interfaces
         /// <param name="unlinkOperatorRequest"></param>
         /// <returns></returns>
         Task<OperationResult<bool>> UnlinkOperatorAsync(OperatorUnlinkDto unlinkOperatorRequest);
+
+
+        Task<OperationResult<PaginatedResult<PointSaleResultFullDto>>> GetPointSalesByFilterAsync(PointSaleFilter pointSaleFilter);
     }
 }
