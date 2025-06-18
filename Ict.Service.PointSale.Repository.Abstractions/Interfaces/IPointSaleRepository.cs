@@ -25,6 +25,14 @@ namespace Ict.Service.PointSale.Repository.Abstractions.Interfaces
         Task<OperationResult<List<PointSaleResultFullDto>>> GetPointSaleByOwnerIdAsync(Guid ownerId);
 
 
+        /// <summary>
+        /// Асинхронно получает точки продаж по идентификатору оператора.
+        /// </summary>
+        Task<OperationResult<List<PointSaleResultFullDto>>> GetByOperatorAsync(Guid operatorId);
+
+        /// <summary>
+        /// Добовляет связь между торговой точкой и оператором.
+        /// </summary>
         Task<OperationResult<Guid?>> AddOperatorToPointSaleAsync(LinkOperatorDto linkOperatorDto);
 
         Task<OperationResult<bool>> UnlinkOperatorAsync(OperatorUnlinkDto unlinkOperatorDto);
@@ -34,6 +42,14 @@ namespace Ict.Service.PointSale.Repository.Abstractions.Interfaces
 
         Task<OperationResult<PaginatedResult<Guid>>> GetFilteredPointsSaleAsync(PointSaleFilter filter);
 
+        Task<OperationResult<bool>> TransferOwnershipAsync(TransferOwnershipDto transferOwnershipDto);
+
+        /// <summary>
+        /// Асинхронно получает количество точек продаж
+        /// </summary>
+        Task<OperationResult<int>> GetCountPointSalesAsync();
+
+        Task<OperationResult<List<PointSaleCounts>>> GetCountsByOwnersIdAsync(List<Guid> ownerIds);
 
     }
 }

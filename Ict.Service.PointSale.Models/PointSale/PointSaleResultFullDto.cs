@@ -13,7 +13,12 @@ namespace Ict.Service.PointSale.Models.PointSale
         /// <summary>
         /// Идентификатор владельца.
         /// </summary>
-        public Guid OwnerId { get; set; }
+        public Guid? OwnerId { get; set; }
+
+        /// <summary>
+        /// Имя владельца точки продаж.
+        /// </summary>
+        public string? OwnerName { get; set; }
 
 
         /// <summary>
@@ -30,9 +35,9 @@ namespace Ict.Service.PointSale.Models.PointSale
         /// <summary>
         /// Идентификатор типа владельца точки продаж.
         /// </summary>
-        public int OwnerTypeId { get; set; }
+        public int? OwnerTypeId { get; set; }
 
-        public string OwnerTypeName { get; set; } = string.Empty;
+        public string? OwnerTypeName { get; set; }
 
         // Типы и статусы
         public int CreationTypeId { get; set; }
@@ -54,6 +59,10 @@ namespace Ict.Service.PointSale.Models.PointSale
         public DateOnly? OpenDateLocation { get; set; }
 
         public string Address { get; set; } = string.Empty;
+
+        public float Latitude { get; set; }
+
+        public float Longitude { get; set; }
 
         public DateTime? CreationDateLocation { get; set; }
 

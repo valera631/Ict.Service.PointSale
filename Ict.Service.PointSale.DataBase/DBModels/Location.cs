@@ -33,6 +33,13 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         public string Address { get; set; } = null!;
 
 
+        public float Latitude { get; set; }
+
+        public float Longitude { get; set; }
+
+        public string AddressId { get; set; } = string.Empty;
+
+
         /// <summary>
         /// Внешний ключ для таблицы PointSales.
         /// Указывает, к какой точке продаж относится данная локация.

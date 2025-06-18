@@ -19,6 +19,11 @@ namespace Ict.Service.PointSale.Models.PointSale
         public string NamePointSale { get; set; } = null!;
 
         /// <summary>
+        /// Название магазина на английском.
+        /// </summary>
+        public string? EnglishNamePointSale { get; set; }
+
+        /// <summary>
         /// Внешний ключ для связи с таблицей PointSales.
         /// Указывает, к какой точке продаж относится данная деятельность.
         /// </summary>

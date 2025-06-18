@@ -15,12 +15,14 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         /// <summary>
         /// Индификатор владельца.
         /// </summary>
-        public Guid OwnerId { get; set; }
+        public Guid? OwnerId { get; set; }
 
         /// <summary>
         /// Индефикатор типа владельца точки продаж.
         /// </summary>
-        public int OwnerTypeId { get; set; }
+        public int? OwnerTypeId { get; set; }
+
+        public string? OwnerName { get; set; } 
 
         /// <summary>
         /// Индификатор типа создания.
@@ -36,6 +38,11 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         /// Название точки продаж.
         /// </summary>
         public string NamePointSale { get; set; } = null!;
+
+        /// <summary>
+        /// Название магазина на английском.
+        /// </summary>
+        public string? EnglishNamePointSale { get; set; }
 
         /// <summary>
         /// Дата открытия точки продажи.
@@ -78,5 +85,11 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         /// Адрес локации.
         /// </summary>
         public string Address { get; set; } = null!;
+
+        public float Latitude { get; set; }
+
+        public float Longitude { get; set; }
+
+        public string LocationId { get; set; } = string.Empty;
     }
 }

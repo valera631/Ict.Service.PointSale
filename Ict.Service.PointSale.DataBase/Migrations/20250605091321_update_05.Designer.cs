@@ -4,6 +4,7 @@ using Ict.Service.PointSale.DataBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ict.Service.PointSale.DataBase.Migrations
 {
     [DbContext(typeof(PointSaleDbContext))]
-    partial class PointSaleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250605091321_update_05")]
+    partial class update_05
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -326,9 +329,6 @@ namespace Ict.Service.PointSale.DataBase.Migrations
 
                     b.Property<Guid?>("OwnerId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("OwnerName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OwnerTypeId")
                         .HasColumnType("int");

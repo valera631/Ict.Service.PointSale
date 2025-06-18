@@ -27,12 +27,14 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         /// <summary>
         /// Индификатор владельца точки продаж.
         /// </summary>
-        public Guid OwnerId { get; set; }
+        public Guid? OwnerId { get; set; }
 
         /// <summary>
         /// Индефикатор типа владельца точки продаж.
         /// </summary>
-        public int OwnerTypeId { get; set; } // Внешний ключ
+        public int? OwnerTypeId { get; set; } // Внешний ключ
+
+        public string? OwnerName { get; set; }
 
         /// <summary>
         /// Внешний ключ для таблицы OrganizationTypeId .

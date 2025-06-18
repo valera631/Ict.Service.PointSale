@@ -40,12 +40,84 @@ namespace Ict.Service.PointSale.Core.Services
                 }
 
                 var result = await _pointSaleRepository.CreatePointSale(pointSaleFullDto);
+                response.Data = pointSaleFullDto.PointSale.PointSaleId;
             }
             catch (Exception ex)
             {
                 response.ErrorMessage = ex.Message;
                 return response;
             }
+            return response;
+        }
+
+        public async Task<OperationResult<List<PointSaleResultFullDto>>> GetByOperatorAsync(Guid operatorId)
+        {
+            OperationResult<List<PointSaleResultFullDto>> response = new();
+
+            try
+            {
+                var pointSaleResult = await _pointSaleRepository.GetByOperatorAsync(operatorId);
+
+                if (!pointSaleResult.IsSuccess || pointSaleResult.Data == null)
+                {
+                    response.ErrorMessage = pointSaleResult.ErrorMessage ?? "Failed to retrieve point of sale data.";
+                    return response;
+                }
+
+                response.Data = pointSaleResult.Data;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+        }
+
+        public async Task<OperationResult<int>> GetCountPointSalesAsync()
+        {
+            OperationResult<int> response = new();
+            try
+            {
+                var dateResult = await _pointSaleRepository.GetCountPointSalesAsync();
+                if (!dateResult.IsSuccess)
+                {
+                    response.ErrorMessage = dateResult.ErrorMessage ?? "Не удалось получить количество точек продаж.";
+                    return response;
+                }
+
+                response.Data = dateResult.Data;
+            }
+            catch (Exception ex)
+            {
+
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+
+            return response;
+        }
+
+        public async Task<OperationResult<List<PointSaleCounts>>> GetCountsByOwnersIdAsync(List<Guid> ownerIds)
+        {
+            OperationResult<List<PointSaleCounts>> response = new();
+            try
+            {
+                if (ownerIds == null || !ownerIds.Any())
+                {
+                    response.Data = new List<PointSaleCounts>();
+                    return response;
+                }
+                var countsResult = await _pointSaleRepository.GetCountsByOwnersIdAsync(ownerIds);
+
+                response.Data = countsResult.Data;
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+            }
+
             return response;
         }
 
@@ -165,6 +237,27 @@ namespace Ict.Service.PointSale.Core.Services
                 }
 
                 response.Data = addResult.Data;
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+            return response;
+        }
+
+        public async Task<OperationResult<bool>> TransferOwnershipAsync(TransferOwnershipDto transferOwnershipDto)
+        {
+            OperationResult<bool> response = new();
+            try
+            {
+                var transferResult = await _pointSaleRepository.TransferOwnershipAsync(transferOwnershipDto);
+                if (!transferResult.IsSuccess)
+                {
+                    response.ErrorMessage = transferResult.ErrorMessage ?? "Не удалось передать право собственности на точку продаж.";
+                    return response;
+                }
 
             }
             catch (Exception ex)

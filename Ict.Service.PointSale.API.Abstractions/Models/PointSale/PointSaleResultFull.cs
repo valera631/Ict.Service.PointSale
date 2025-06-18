@@ -13,7 +13,12 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         /// <summary>
         /// Идентификатор владельца.
         /// </summary>
-        public Guid OwnerId { get; set; }
+        public Guid? OwnerId { get; set; }
+
+        /// <summary>
+        /// Имя владельца точки продаж.
+        /// </summary>
+        public string? OwnerName { get; set; }
 
 
         /// <summary>
@@ -53,6 +58,9 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         public DateOnly? OpenDateLocation { get; set; }
 
         public string Address { get; set; } = string.Empty;
+        public float Latitude { get; set; }
+
+        public float Longitude { get; set; }
 
         public DateTime? CreationDateLocation { get; set; }
 

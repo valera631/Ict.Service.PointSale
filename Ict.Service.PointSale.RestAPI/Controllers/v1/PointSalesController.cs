@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using Ict.ApiResults;
 using Ict.Service.PointSale.API.Abstractions.Models.PointSale;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
@@ -67,6 +68,27 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
                     operation.Result = _mapper.Map<List<PointSaleResultFull>>(result.Data);
                 }
 
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+
+        [HttpGet("GetByOperator/{operatorId}")]
+        public async Task<ApiResult<List<PointSaleResultFull>>> GetByOperator(Guid operatorId)
+        {
+            var operation = ApiResult.CreateResult<List<PointSaleResultFull>>();
+            try
+            {
+                var result = await _pointSaleService.GetByOperatorAsync(operatorId);
+                if (result.Data != null)
+                {
+                    operation.Result = _mapper.Map<List<PointSaleResultFull>>(result.Data);
+                }
                 operation.ErrorMessage = result.ErrorMessage;
             }
             catch (Exception ex)
@@ -158,6 +180,51 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
             return operation;
         }
 
+        [HttpGet("Count")]
+        public async Task<ApiResult<int>> GetCountPointSales()
+        {
+            var operation = ApiResult.CreateResult<int>();
+            try
+            {
+                var result = await _pointSaleService.GetCountPointSalesAsync();
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+        [HttpGet("CountsByOwnersId")]
+        public async Task<ApiResult<List<PointSaleCountResult>>> GetCountsByOwnersId(List<Guid> ownerIds)
+        {
+            var operation = ApiResult.CreateResult<List<PointSaleCountResult>>();
+            try
+            {
+                var result = await _pointSaleService.GetCountsByOwnersIdAsync(ownerIds);
+
+                if (result.IsSuccess && result.Data != null)
+                {
+                    operation.Result = result.Data.Select(count => new PointSaleCountResult
+                    {
+                        OwnerId = count.OwnerId,
+                        PointSaleCount = count.PointSaleCount
+                    }).ToList();
+                }
+                else
+                {
+                    operation.ErrorMessage = result.ErrorMessage;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
 
 
         /// <summary>
@@ -213,5 +280,30 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
             }
             return operation;
         }
+
+        [HttpPost("TransferOwnership")]
+        public async Task<ApiResult<bool>> TransferPointSaleOwnership(TransferOwnershipRequest transferOwnershipRequest)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var transferOwnershipDto = new TransferOwnershipDto
+                {
+                    PointSaleId = transferOwnershipRequest.PointSaleId,
+                    NewOwnerId = transferOwnershipRequest.NewOwnerId,
+                    OwnerTypeId = transferOwnershipRequest.OwnerTypeId,
+                    OwnerName = transferOwnershipRequest.OwnerName
+                };
+
+                var result = await _pointSaleService.TransferOwnershipAsync(transferOwnershipDto);
+
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
     }
 }

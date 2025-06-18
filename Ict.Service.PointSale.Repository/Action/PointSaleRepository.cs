@@ -119,6 +119,7 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
+
         public async Task<OperationResult<PaginatedResult<Guid>>> GetFilteredPointsSaleAsync(PointSaleFilter filter)
         {
             var response = new OperationResult<PaginatedResult<Guid>>();
@@ -181,12 +182,168 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
-        public async Task<OperationResult<PointSaleResultFullDto>> GetPointSaleByIdAsync(Guid pointSaleId, DateOnly? targetDate)
+        public async Task<OperationResult<List<PointSaleResultFullDto>>> GetByOperatorAsync(Guid operatorId)
         {
-            var response = new OperationResult<PointSaleResultFullDto>();
+            OperationResult<List<PointSaleResultFullDto>> response = new();
 
             try
             {
+                var targetDate = DateOnly.FromDateTime(DateTime.Now);
+                var pointSaleDtos = new List<PointSaleResultFullDto>();
+
+                // Fetch point sales where operatorId is in Operators
+                var pointSales = await _pointSaleDbContext.PointSales
+                    .Where(x => x.Operators.Any(op => op.OperatorId == operatorId))
+                    .Select(x => new
+                    {
+                        PointSaleEntity = x,
+                        PointSaleActivity = x.PointSaleActivities
+                            .Where(a => a.OpenDate <= targetDate)
+                            .OrderByDescending(a => a.OpenDate)
+                            .FirstOrDefault(),
+                        Location = x.Locations
+                            .Where(l => l.OpenDate <= targetDate)
+                            .OrderByDescending(l => l.OpenDate)
+                            .FirstOrDefault(),
+                        Description = x.Descriptions
+                            .Where(d => d.OpenDate <= targetDate)
+                            .OrderByDescending(d => d.EntryDate)
+                            .FirstOrDefault(),
+                        Chief = x.Chiefs
+                            .Where(c => c.OpenDate <= targetDate)
+                            .OrderByDescending(c => c.OpenDate)
+                            .FirstOrDefault(),
+                        Operators = x.Operators
+                            .Select(op => op.OperatorId)
+                            .ToList()
+                    })
+                    .AsNoTracking()
+                    .AsSplitQuery()
+                    .ToListAsync();
+
+                if (!pointSales.Any())
+                {
+                    response.Data = pointSaleDtos; // Empty list
+                    return response;
+                }
+
+                // Collect IDs for reference data
+                var pointSaleIds = pointSales.Select(ps => ps.PointSaleEntity.PointSaleId).ToList();
+                var creationTypeIds = pointSales.Select(ps => ps.PointSaleEntity.CreationTypeId).Distinct().ToList();
+                var organizationTypeIds = pointSales.Select(ps => ps.PointSaleEntity.OrganizationTypeId).Distinct().ToList();
+                var closingStatusIds = pointSales.Select(ps => ps.PointSaleEntity.ClosingStatusId).OfType<int>().Distinct().ToList();
+                var ownerTypeIds = pointSales.Select(ps => ps.PointSaleEntity.OwnerTypeId).Distinct().ToList();
+                var chiefPositionIds = pointSales.Where(ps => ps.Chief != null).Select(ps => ps.Chief.ChiefPositionId).Distinct().ToList();
+
+                // Fetch reference data
+                var creationTypes = await _pointSaleDbContext.CreationTypes
+                    .Where(ct => creationTypeIds.Contains(ct.CreationTypeId))
+                    .Select(ct => new { ct.CreationTypeId, ct.CreationTypeName })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var organizationTypes = await _pointSaleDbContext.OrganizationTypes
+                    .Where(ot => organizationTypeIds.Contains(ot.OrganizationTypeId))
+                    .Select(ot => new { ot.OrganizationTypeId, ot.NameType })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var closingStatuses = await _pointSaleDbContext.ClosingStatuses
+                    .Where(cs => closingStatusIds.Contains(cs.ClosingStatusId))
+                    .Select(cs => new { cs.ClosingStatusId, cs.NameStatus })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var ownerTypes = await _pointSaleDbContext.OwnerTypes
+                    .Where(ot => ownerTypeIds.Contains(ot.OwnerTypeId))
+                    .Select(ot => new { ot.OwnerTypeId, ot.NameType })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var chiefPositions = await _pointSaleDbContext.ChiefPositions
+                    .Where(p => chiefPositionIds.Contains(p.ChiefPositionId))
+                    .Select(p => new { p.ChiefPositionId, p.PositionName })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // Build dictionaries for reference data
+                var creationTypeDict = creationTypes.ToDictionary(ct => ct.CreationTypeId, ct => ct.CreationTypeName);
+                var organizationTypeDict = organizationTypes.ToDictionary(ot => ot.OrganizationTypeId, ot => ot.NameType);
+                var closingStatusDict = closingStatuses.ToDictionary(cs => cs.ClosingStatusId, cs => cs.NameStatus);
+                var ownerTypeDict = ownerTypes.ToDictionary(ot => ot.OwnerTypeId, ot => ot.NameType);
+                var chiefPositionDict = chiefPositions.ToDictionary(p => p.ChiefPositionId, p => p.PositionName);
+
+                // Transform point sales into DTOs
+                foreach (var ps in pointSales)
+                {
+                    var pointSaleDto = new PointSaleResultFullDto
+                    {
+                        // Main properties
+                        PointSaleId = ps.PointSaleEntity.PointSaleId,
+                        PointSaleName = ps.PointSaleActivity != null ? ps.PointSaleActivity.NamePointSale ?? "No name" : "No name",
+                        OwnerId = ps.PointSaleEntity.OwnerId,
+                        OwnerTypeId = ps.PointSaleEntity.OwnerTypeId,
+                        OwnerTypeName = ps.PointSaleEntity.OwnerTypeId.HasValue
+                                ? ownerTypeDict.GetValueOrDefault(ps.PointSaleEntity.OwnerTypeId.Value, string.Empty)
+                                : string.Empty,
+                        OpenDateActivity = ps.PointSaleActivity?.OpenDate ?? default,
+                        Email = ps.PointSaleActivity?.Email,
+                        Phone = ps.PointSaleActivity?.Phone,
+
+                        // Location info
+                        LocationId = ps.Location?.LocationId ?? Guid.Empty,
+                        OpenDateLocation = ps.Location?.OpenDate ?? default,
+                        Address = ps.Location?.Address ?? string.Empty,
+                        CreationDateLocation = ps.Location?.EntryDate ?? default,
+
+                        // Types and statuses
+                        CreationTypeId = ps.PointSaleEntity.CreationTypeId,
+                        CreationTypeName = creationTypeDict.GetValueOrDefault(ps.PointSaleEntity.CreationTypeId, string.Empty),
+                        OrganizationTypeId = ps.PointSaleEntity.OrganizationTypeId,
+                        OrganizationTypeName = organizationTypeDict.GetValueOrDefault(ps.PointSaleEntity.OrganizationTypeId, string.Empty),
+                        ClosingStatusId = ps.PointSaleEntity.ClosingStatusId,
+                        ClosingStatusName = ps.PointSaleEntity.ClosingStatusId.HasValue
+                            ? closingStatusDict.GetValueOrDefault(ps.PointSaleEntity.ClosingStatusId.Value, string.Empty)
+                            : string.Empty,
+
+                        // Metadata
+                        IsAproved = ps.PointSaleEntity.IsAproved,
+                        Version = ps.PointSaleEntity.Version,
+                        EntryDate = ps.PointSaleEntity.EntryDate,
+                        ClosingDate = ps.PointSaleEntity.ClosingDate,
+                        DescriptionText = ps.Description?.DescriptionText ?? "No description",
+                        OperatorIds = ps.Operators,
+
+                        // Chief info
+                        ChiefId = ps.Chief?.ChiefId ?? Guid.Empty,
+                        OpenDateChief = ps.Chief?.OpenDate ?? default,
+                        ChiefName = ps.Chief?.ChiefName ?? "No chief assigned",
+                        ChiefPositionId = ps.Chief?.ChiefPositionId ?? 0,
+                        ChiefPositionName = ps.Chief != null && ps.Chief.ChiefPositionId != 0
+                            ? chiefPositionDict.GetValueOrDefault(ps.Chief.ChiefPositionId, "No position assigned")
+                            : "No position assigned"
+                    };
+
+                    pointSaleDtos.Add(pointSaleDto);
+                }
+
+                response.Data = pointSaleDtos;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = $"Error retrieving point sales for operator ID {operatorId}: {ex.Message}";
+                return response;
+            }
+
+            return response;
+        }
+
+        public async Task<OperationResult<PointSaleResultFullDto>> GetPointSaleByIdAsync(Guid pointSaleId, DateOnly? targetDate)
+        {
+            var response = new OperationResult<PointSaleResultFullDto>();
+            try
+            {
+
                 var effectiveDate = targetDate ?? DateOnly.FromDateTime(DateTime.Now); // Текущая дата
 
                 var pointSale = await _pointSaleDbContext.PointSales
@@ -263,6 +420,7 @@ namespace Ict.Service.PointSale.Repository.Action
                     PointSaleId = pointSale.PointSaleEntity.PointSaleId,
                     PointSaleName = pointSale.PointSaleActivity != null ? pointSale.PointSaleActivity.NamePointSale ?? "No name" : "No name",
                     OwnerId = pointSale.PointSaleEntity.OwnerId,
+                    OwnerName = pointSale.PointSaleEntity.OwnerName ?? string.Empty, 
                     OwnerTypeId = pointSale.PointSaleEntity.OwnerTypeId,
                     OwnerTypeName = references?.OwnerTypeName ?? string.Empty,
                     OpenDateActivity = pointSale.PointSaleActivity.OpenDate,
@@ -275,6 +433,8 @@ namespace Ict.Service.PointSale.Repository.Action
                     OpenDateLocation = pointSale.Location?.OpenDate,
                     Address = pointSale.Location?.Address ?? string.Empty,
                     CreationDateLocation = pointSale.Location?.EntryDate,
+                    Longitude = pointSale.Location?.Longitude ?? 0f,
+                    Latitude = pointSale.Location?.Latitude ?? 0f,
 
                     // Типы и статусы
                     CreationTypeId = pointSale.PointSaleEntity.CreationTypeId,
@@ -485,6 +645,106 @@ namespace Ict.Service.PointSale.Repository.Action
                 return response;
             }
 
+        }
+
+        public async Task<OperationResult<bool>> TransferOwnershipAsync(TransferOwnershipDto transferOwnershipDto)
+        {
+            OperationResult<bool> response = new();
+            try
+            {
+                // Поиск сущности в базе данных
+                var entity = await _pointSaleDbContext.PointSales
+                    .FirstOrDefaultAsync(e => e.PointSaleId == transferOwnershipDto.PointSaleId);
+
+                if (entity == null)
+                {
+                    response.ErrorMessage = $"Point sale with ID {transferOwnershipDto.PointSaleId} not found.";
+                    return response;
+                }
+
+                // Проверка, что новый владелец отличается от текущего
+                if (entity.OwnerId == transferOwnershipDto.NewOwnerId)
+                {
+                    response.ErrorMessage = "New owner is the same as the current owner.";
+                    return response;
+                }
+
+                // Обновление владельца
+                entity.OwnerId = transferOwnershipDto.NewOwnerId;
+                entity.OwnerTypeId = transferOwnershipDto.OwnerTypeId;
+                entity.OwnerName = transferOwnershipDto.OwnerName;
+
+
+                // Сохранение изменений в базе данных
+                await _pointSaleDbContext.SaveChangesAsync();
+
+                response.Data = true;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+
+        }
+
+
+        /// <summary>
+        /// Асинхронно получает количество точек продаж.
+        /// </summary>
+        public async Task<OperationResult<int>> GetCountPointSalesAsync()
+        {
+            OperationResult<int> response = new();
+            try
+            {
+                var count = await _pointSaleDbContext.PointSales
+                    .CountAsync();
+
+                response.Data = count;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = $"Error retrieving point sales count: {ex.Message}";
+                return response;
+            }
+
+            return response;
+        }
+
+        public async Task<OperationResult<List<PointSaleCounts>>> GetCountsByOwnersIdAsync(List<Guid> ownerIds)
+        {
+            OperationResult<List<PointSaleCounts>> response = new();
+            try
+            {
+                var pointSaleCounts = await _pointSaleDbContext.PointSales
+              .Where(ps => ps.OwnerId.HasValue && ownerIds.Contains(ps.OwnerId.Value))
+              .GroupBy(ps => ps.OwnerId)
+              .Select(g => new PointSaleCounts
+              {
+                  OwnerId = g.Key!.Value,
+                  PointSaleCount = g.Count()
+              })
+              .ToListAsync();
+
+                // Добавляем ownerIds с нулевым количеством
+                var result = ownerIds.Select(ownerId => pointSaleCounts
+                    .FirstOrDefault(psc => psc.OwnerId == ownerId)
+                    ?? new PointSaleCounts
+                    {
+                        OwnerId = ownerId,
+                        PointSaleCount = 0
+                    })
+                    .ToList();
+                response.Data = result;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = $"Error retrieving point sale counts by owners: {ex.Message}";
+                return response;
+            }
+
+            return response;
         }
     }
 }

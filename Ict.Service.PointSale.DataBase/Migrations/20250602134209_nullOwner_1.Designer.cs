@@ -4,6 +4,7 @@ using Ict.Service.PointSale.DataBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ict.Service.PointSale.DataBase.Migrations
 {
     [DbContext(typeof(PointSaleDbContext))]
-    partial class PointSaleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250602134209_nullOwner_1")]
+    partial class nullOwner_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,21 +149,11 @@ namespace Ict.Service.PointSale.DataBase.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AddressId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsAproved")
                         .HasColumnType("bit");
-
-                    b.Property<float>("Latitude")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Longitude")
-                        .HasColumnType("real");
 
                     b.Property<DateOnly>("OpenDate")
                         .HasColumnType("date");
@@ -274,9 +267,6 @@ namespace Ict.Service.PointSale.DataBase.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EnglishNamePointSale")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("datetime2");
 
@@ -326,9 +316,6 @@ namespace Ict.Service.PointSale.DataBase.Migrations
 
                     b.Property<Guid?>("OwnerId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("OwnerName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OwnerTypeId")
                         .HasColumnType("int");

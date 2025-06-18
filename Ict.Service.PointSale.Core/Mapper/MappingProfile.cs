@@ -31,6 +31,7 @@ namespace Ict.Service.PointSale.Core.Mapper
                 {
                     PointSaleActivityId = Guid.NewGuid(),
                     NamePointSale = src.NamePointSale,
+                    EnglishNamePointSale = src.EnglishNamePointSale,
                     PointSaleId = Guid.Empty,
                     OpenDate = src.OpenDatePointSale,
                     Email = src.Email,
@@ -58,7 +59,10 @@ namespace Ict.Service.PointSale.Core.Mapper
                 {
                     LocationId = Guid.NewGuid(),
                     OpenDate = src.OpenDateLocation,
+                    Latitude = src.Latitude,
+                    Longitude = src.Longitude,
                     Address = src.Address,
+                    AddressId = src.LocationId,
                     PointSaleId = Guid.Empty,
                     EntryDate = DateTime.Now
                 }));
