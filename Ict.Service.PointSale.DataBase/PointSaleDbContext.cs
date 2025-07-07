@@ -22,8 +22,11 @@ namespace Ict.Service.PointSale.DataBase
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Logo> Logos { get; set; }
         public DbSet<Description> Descriptions { get; set; }
-
         public DbSet<OwnerType> OwnerTypes { get; set; }
+        public DbSet<PointSaleSchedule> PointSaleSchedules { get; set; }
+        public DbSet<CategoryPointSale> CategoryPointSales{ get; set; }
+        public DbSet<AlternativeWord> AlternativeWords { get; set; }
+
 
 
         public PointSaleDbContext(DbContextOptions<PointSaleDbContext> options) : base(options)

@@ -12,5 +12,8 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.References
         public List<LookupItemResponse> OrganizationTypes { get; set; } = new();
         public List<LookupItemResponse> ChiefPositions { get; set; } = new();
         public List<LookupItemResponse> OwnerTypes { get; set; } = new();
+
+
+        public List<CategoryItemResponse> Categories { get; set; } = new();
     }
 }

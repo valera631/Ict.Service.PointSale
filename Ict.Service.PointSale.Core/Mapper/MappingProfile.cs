@@ -2,6 +2,7 @@
 using Ict.Service.PointSale.API.Abstractions.Models.PointSale;
 using Ict.Service.PointSale.API.Abstractions.Models.References;
 using Ict.Service.PointSale.DataBase.DBModels;
+using Ict.Service.PointSale.Models;
 using Ict.Service.PointSale.Models.Chief;
 using Ict.Service.PointSale.Models.Description;
 using Ict.Service.PointSale.Models.Location;
@@ -46,6 +47,7 @@ namespace Ict.Service.PointSale.Core.Mapper
                     PointSaleId = Guid.Empty,
                     EntryDate = DateTime.Now
                 } : null))
+                .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.CategoryIds))
                 .ForMember(dest => dest.Chief, opt => opt.MapFrom(src => new ChiefDto
                 {
                     ChiefId = Guid.NewGuid(),
@@ -65,13 +67,25 @@ namespace Ict.Service.PointSale.Core.Mapper
                     AddressId = src.LocationId,
                     PointSaleId = Guid.Empty,
                     EntryDate = DateTime.Now
-                }));
-
+                }))
+                .ForMember(dest => dest.PointSaleSchedules, opt => opt.MapFrom(src => src.WorkSchedule.Select(ws => new PointSaleScheduleDto
+                {
+                       PointSaleScheduleId = Guid.NewGuid(),
+                       PointSaleId = Guid.Empty, // Будет заполнен позже
+                       DayOfWeek = ws.DayOfWeek,
+                       IsWorkingDay = ws.IsWorkingDay,
+                       StartTime = ws.StartTime,
+                       EndTime = ws.EndTime,
+                       BreakStartTime = ws.BreakStartTime,
+                       BreakEndTime = ws.BreakEndTime
+                   }).ToList()));
 
 
 
             CreateMap<LookupItemDto, LookupItemResponse>();
+            CreateMap<CategoryItem, CategoryItemResponse>();
             CreateMap<PointSaleTypesDto, PointSaleTypesResponse>();
+            CreateMap<PointSaleScheduleDto, PointSaleSchedule>();
 
 
             CreateMap<PointSaleDto, PointSaleEntity>();

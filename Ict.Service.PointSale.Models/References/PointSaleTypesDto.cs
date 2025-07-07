@@ -12,5 +12,8 @@ namespace Ict.Service.PointSale.Models.References
         public List<LookupItemDto> OrganizationTypes { get; set; } = new();
         public List<LookupItemDto> ChiefPositions { get; set; } = new();
         public List<LookupItemDto> OwnerTypes { get; set; } = new();
+
+
+        public List<CategoryItem> Categories { get; set; } = new();
     }
 }

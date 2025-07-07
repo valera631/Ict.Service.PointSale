@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Ict.Service.PointSale.DataBase;
 using Ict.Service.PointSale.DataBase.DBModels;
 using Ict.Service.PointSale.Models;
@@ -101,12 +96,52 @@ namespace Ict.Service.PointSale.Repository.Action
                     _pointSaleDbContext.Descriptions.Add(description);
                 }
 
+                if(pointSaleDto.PointSaleSchedules != null && pointSaleDto.PointSaleSchedules.Any())
+                {
+                    var schedules = _mapper.Map<List<PointSaleSchedule>>(pointSaleDto.PointSaleSchedules);
+                    _pointSaleDbContext.PointSaleSchedules.AddRange(schedules);
+                }
+
+
                 var location = _mapper.Map<Location>(pointSaleDto.Location);
 
+                if(pointSaleDto.AlternativeName != null && pointSaleDto.AlternativeName.Any())
+                {
+                    var alternativeWords = pointSaleDto.AlternativeName
+                        .Select(name => new AlternativeWord
+                        {
+                            AlternativeWordId = Guid.NewGuid(),
+                            PointSaleId = pointSale.PointSaleId,
+                            AlternativeWordName = name,
+                        })
+                        .ToList();
+                    _pointSaleDbContext.AlternativeWords.AddRange(alternativeWords);
+                }
 
                 await _pointSaleDbContext.PointSales.AddAsync(pointSale);
                 await _pointSaleDbContext.PointSaleActivities.AddAsync(pointSaleActivity);
                 await _pointSaleDbContext.Locations.AddAsync(location);
+
+                if ( pointSaleDto.CategoryIds != null && pointSaleDto.CategoryIds.Any())
+                {
+                    // Optionally validate that CategoryIds exist
+                    var validCategoryIds = await _pointSaleDbContext.CategoryPointSales
+                        .Where(c => pointSaleDto.CategoryIds.Contains(c.CategoryId) && c.IsEnabled)
+                        .Select(c => c.CategoryId)
+                        .ToListAsync();
+
+                    if (validCategoryIds.Count != pointSaleDto.CategoryIds.Count)
+                    {
+                        response.ErrorMessage = "Один или несколько указанных идентификаторов категорий недействительны или неактивны.";
+                        await transaction.RollbackAsync();             
+                        return response;
+                    }
+
+
+                    pointSale.CategoryPointSales = await _pointSaleDbContext.CategoryPointSales
+                       .Where(c => pointSaleDto.CategoryIds.Contains(c.CategoryId))
+                       .ToListAsync();
+                }
 
                 await _pointSaleDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();

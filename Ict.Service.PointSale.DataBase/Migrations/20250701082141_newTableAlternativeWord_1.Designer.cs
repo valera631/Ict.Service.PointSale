@@ -4,6 +4,7 @@ using Ict.Service.PointSale.DataBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ict.Service.PointSale.DataBase.Migrations
 {
     [DbContext(typeof(PointSaleDbContext))]
-    partial class PointSaleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250701082141_newTableAlternativeWord_1")]
+    partial class newTableAlternativeWord_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

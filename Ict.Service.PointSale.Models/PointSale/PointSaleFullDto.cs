@@ -20,5 +20,11 @@ namespace Ict.Service.PointSale.Models.PointSale
         public ChiefDto Chief { get; set; }
 
         public LocationDto Location { get; set; }
+
+        public List<PointSaleScheduleDto> PointSaleSchedules { get; set; } = new List<PointSaleScheduleDto>();
+
+        public List<int> CategoryIds { get; set; } = new List<int>();
+
+        public List<string> AlternativeName { get; set; } = new List<string>();
     }
 }

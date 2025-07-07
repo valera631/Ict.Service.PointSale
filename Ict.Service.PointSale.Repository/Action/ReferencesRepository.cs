@@ -20,6 +20,28 @@ namespace Ict.Service.PointSale.Repository.Action
             _pointSaleDbContext = pointSaleDbContext;
         }
 
+        public async Task<OperationResult<List<CategoryItem>>> GetCategoriesAsync()
+        {
+            OperationResult<List<CategoryItem>> response = new();
+            try
+            {
+                var categories = _pointSaleDbContext.CategoryPointSales
+                    .Select(x => new CategoryItem
+                    {
+                        Id = x.CategoryId,
+                        Name = x.Name,
+                        Path = x.Path
+                    }).ToListAsync();
+
+                response.Data = categories.Result;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                return response;
+            }
+            return response;
+        }
 
         public async Task<OperationResult<List<LookupItemDto>>> GetChiefPositionTypesAsync()
         {

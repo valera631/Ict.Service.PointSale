@@ -34,14 +34,23 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
 
             try
             {
+
                 var pointSaleFullDto = _mapper.Map<PointSaleFullDto>(request);
 
                 // Заполнение PointSaleId во всех связанных объектах
                 pointSaleFullDto.PointSaleActivity.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
                 pointSaleFullDto.Chief.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
                 pointSaleFullDto.Location.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
-                pointSaleFullDto.Description.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
 
+                if (request.DescriptionText != null)
+                    pointSaleFullDto.Description.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
+
+
+                // Заполнение OrganizationId для расписания работы
+                foreach (var schedule in pointSaleFullDto.PointSaleSchedules)
+                {
+                    schedule.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
+                }
 
                 var result = await _pointSaleService.CreatePointSaleAsync(pointSaleFullDto);
                 operation.Result = result.Data;

@@ -64,6 +64,15 @@ namespace Ict.Service.PointSale.Core.Services
                 }
                 result.OwnerTypes = ownerTypesResult.Data ?? new List<LookupItemDto>();
 
+
+                var categoryResult = await _referencesRepository.GetCategoriesAsync();
+                if (categoryResult.Data == null)
+                {
+                    response.ErrorMessage = categoryResult.ErrorMessage ?? "Ошибка при получении категорий";
+                    return response;
+                }
+                result.Categories = categoryResult.Data ?? new List<CategoryItem>();
+
                 response.Data = result;
             }
             catch (Exception ex)

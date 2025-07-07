@@ -11,5 +11,9 @@ namespace Ict.Service.PointSale.Repository.Abstractions.Interfaces
         Task<OperationResult<List<LookupItemDto>>> GetOrganizationTypesAsync();
         Task<OperationResult<List<LookupItemDto>>> GetChiefPositionTypesAsync();
         Task<OperationResult<List<LookupItemDto>>> GetOwnerTypesAsync();
+
+
+
+        Task<OperationResult<List<CategoryItem>>> GetCategoriesAsync();
     }
 }

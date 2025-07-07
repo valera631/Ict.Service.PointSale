@@ -94,6 +94,11 @@ namespace Ict.Service.PointSale.DataBase.DBModels
 
 
         /// <summary>
+        /// Навигационное свойство для связи с таблицей PointSaleSchedules(где находиться расписание работы торговой точки)
+        /// </summary>
+        public virtual ICollection<PointSaleSchedule> PointSaleSchedules { get; set; } = new List<PointSaleSchedule>();
+
+        /// <summary>
         /// Навигационное свойство для связи с фотографиями организации.
         /// </summary>
         public virtual ICollection<Photo> Photos { get; set; } = new List<Photo>();
@@ -102,6 +107,11 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         /// Навигационное свойство для связи с таблицей логотипов.
         /// </summary>
         public virtual ICollection<Logo> Logos { get; set; } = new List<Logo>();
+
+        /// <summary>
+        /// Навигационное свойство для связи с таблицей AlternativeWords. 
+        /// </summary>
+        public virtual ICollection<AlternativeWord> AlternativeWords { get; set; } = new List<AlternativeWord>();
 
         /// <summary>
         /// Навигационное свойство для связи с таблицей описаний.
@@ -127,5 +137,10 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         /// Навигационное свойство для связи с операторами.
         /// </summary>
         public virtual ICollection<Operator> Operators { get; set; } = new List<Operator>();
+
+        /// <summary>
+        /// Навигационное свойство для связи с таблицей CategoryPointSale.
+        /// </summary>
+        public virtual ICollection<CategoryPointSale> CategoryPointSales { get; set; } = new List<CategoryPointSale>();
     }
 }

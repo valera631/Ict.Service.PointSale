@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ict.Service.PointSale.API.Abstractions.Models.Schedule;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
 {
@@ -91,5 +92,12 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         public float Longitude { get; set; }
 
         public string LocationId { get; set; } = string.Empty;
+
+
+        public List<string> AlternativeName { get; set; } = new List<string>();
+
+        public List<int> CategoryIds { get; set; } = new List<int>();
+
+        public List<WorkScheduleRequest> WorkSchedule { get; set; } = new List<WorkScheduleRequest>();
     }
 }
