@@ -18,6 +18,10 @@ namespace Ict.Service.PointSale.Models.Photo
         /// </summary>
         public byte[] PhotoData { get; set; } = Array.Empty<byte>();
 
+        /// <summary>
+        /// Дата создания логотипа
+        /// </summary>
+        public DateOnly OpenDateLogo { get; set; }
 
         /// <summary>
         /// Имя файла фотографии

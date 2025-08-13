@@ -22,7 +22,7 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         /// <summary>
         /// Внешний ключ для таблицы CreationType.
         /// </summary>
-        public int CreationTypeId { get; set; } // Внешний ключ
+        public int? CreationTypeId { get; set; } // Внешний ключ
 
         /// <summary>
         /// Индификатор владельца точки продаж.
@@ -34,15 +34,24 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         /// </summary>
         public int? OwnerTypeId { get; set; } // Внешний ключ
 
+        /// <summary>
+        /// Название владельца точки продаж.
+        /// </summary>
         public string? OwnerName { get; set; }
+
+
+        /// <summary>
+        /// Дата регистрации.
+        /// </summary>
+        public DateOnly? CreationDate { get; set; }
 
         /// <summary>
         /// Внешний ключ для таблицы OrganizationTypeId .
         /// </summary>
-        public int OrganizationTypeId { get; set; }
+        public int? OrganizationTypeId { get; set; }
 
         /// <summary>
-        /// Дата закрытия организации, если применимо.
+        /// Дата закрытия
         /// </summary>
         public DateOnly? ClosingDate { get; set; }
 

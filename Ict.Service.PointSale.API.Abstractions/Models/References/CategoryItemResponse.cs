@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.References
 {
+    /// <summary>
+    /// Мдель ответа для категории магазинов
+    /// </summary>
     public class CategoryItemResponse
     {
         /// <summary>

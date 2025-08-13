@@ -1,7 +1,9 @@
 ﻿using Ict.ApiResults;
 using Ict.Service.PointSale.API.Abstractions.Models.Description;
+using Ict.Service.PointSale.API.Abstractions.Models.Update;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
 using Ict.Service.PointSale.Models.Description;
+using Ict.Service.PointSale.Models.Update;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ict.Service.PointSale.RestAPI.Controllers.v1
@@ -18,48 +20,21 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
             _descriptionService = descriptionService;
         }
 
-        /// <summary>
-        /// Обновляет описание организации.
-        /// </summary>
-        /// <param name="descriptionChangeRequest"></param>
-        /// <returns></returns>
-        [HttpPost("Change")]
-        public async Task<ApiResult<Guid>> ChangeDescription(DescriptionChangeRequest descriptionChangeRequest)
-        {
-            var operation = ApiResult.CreateResult<Guid>();
-            try
-            {
-                var descriptionChange = new DescriptionChangeDto()
-                {
-                    PointSaleId = descriptionChangeRequest.PointSaleId,
-                    DescriptionText = descriptionChangeRequest.DescriptionText
-                };
-
-                var result = await _descriptionService.ChangeDescriptionAsync(descriptionChange);
-                operation.Result = result.Data;
-                operation.ErrorMessage = result.ErrorMessage;
-
-            }
-            catch (Exception ex)
-            {
-                operation.ErrorMessage = ex.Message;
-            }
-            return operation;
-
-        }
-
+       
 
         [HttpPut("Update")]
-        public async Task<ApiResult<Guid>> UpdateDescription(DescriptionChangeRequest descriptionChange)
+        public async Task<ApiResult<bool>> UpdateDescription(PointSaleDescriptionUpdateRequest descriptionChange)
         {
-            var operation = ApiResult.CreateResult<Guid>();
+            var operation = ApiResult.CreateResult<bool>();
             try
             {
-                var descriptionChangeDto = new DescriptionChangeDto()
+                var descriptionChangeDto = new DescriptionUpdateDto()
                 {
                     PointSaleId = descriptionChange.PointSaleId,
-                    DescriptionText = descriptionChange.DescriptionText
+                    DescriptionText = descriptionChange.DescriptionText,
+                    OpenDateDescription = descriptionChange.OpenDateDescription
                 };
+
                 var result = await _descriptionService.UpdateDescriptionAsync(descriptionChangeDto);
                 operation.Result = result.Data;
                 operation.ErrorMessage = result.ErrorMessage;

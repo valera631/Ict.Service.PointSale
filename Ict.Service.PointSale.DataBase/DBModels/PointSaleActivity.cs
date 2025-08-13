@@ -5,9 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ict.Service.PointSale.DataBase.DBModels
 {
+    [Index(nameof(PointSaleId), nameof(OpenDate))]
     public class PointSaleActivity
     {
 
@@ -36,17 +38,7 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         /// <summary>
         /// Дата изменения данных о деятельности.
         /// </summary>
-        public DateOnly? OpenDate { get; set; }
-
-        /// <summary>
-        /// Электронная почта организации.
-        /// </summary>
-        public string? Email { get; set; }
-
-        /// <summary>
-        /// Контактный телефон.
-        /// </summary>
-        public string? Phone { get; set; }
+        public DateOnly OpenDate { get; set; }
 
         /// <summary>
         /// Дата внесения записи в базу данных.

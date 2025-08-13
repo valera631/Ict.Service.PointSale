@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.DataBase.DBModels
 {
+    /// <summary>
+    /// Представляет тип создания точки продаж.
+    /// </summary>
     public class CreationType
     {
         /// <summary>

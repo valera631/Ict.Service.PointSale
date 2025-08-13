@@ -5,20 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Ict.Service.PointSale.Models;
 using Ict.Service.PointSale.Models.Description;
+using Ict.Service.PointSale.Models.Update;
 
 namespace Ict.Service.PointSale.Repository.Abstractions.Interfaces
 {
+    /// <summary>
+    /// Интерфейс для работы с описаниями торговых точек.
+    /// </summary>
     public interface IDescriptionRepository
     {
-
         /// <summary>
-        /// Изменяет описание организации в базе данных.
+        /// Асинхронно обновляет описание точки продаж на основе предоставленных данных.
         /// </summary>
-        /// <param name="descriptionChangeDto">DTO с данными для изменения описания.</param>
-        /// <returns>Результат операции с уникальным идентификатором измененной организации.</returns>
-        Task<OperationResult<Guid>> ChangeDescriptionAsync(DescriptionChangeDto descriptionChangeDto);
-
-
-        Task<OperationResult<Guid>> UpdateDescriptionAsync(DescriptionChangeDto descriptionChange);
+        Task<OperationResult<bool>> UpdateDescriptionAsync(DescriptionUpdateDto descriptionChange);
     }
 }

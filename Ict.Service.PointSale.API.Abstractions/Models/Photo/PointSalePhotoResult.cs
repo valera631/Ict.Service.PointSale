@@ -23,18 +23,20 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.Photo
         /// </summary>
         public string PhotoData { get; set; } = string.Empty;
 
-
         /// <summary>
         /// Имя файла фотографии
         /// </summary>
         public string PhotoName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Дата создания логотипа
+        /// </summary>
+        public DateOnly OpenDateLogo { get; set; }
 
         /// <summary>
         /// Флаг главной фотографии
         /// </summary>
         public bool IsMain { get; set; }
-
 
         /// <summary>
         /// Тип контента

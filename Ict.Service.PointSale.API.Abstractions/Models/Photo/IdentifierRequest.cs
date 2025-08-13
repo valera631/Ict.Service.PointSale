@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.Photo
 {
+    /// <summary>
+    /// Запрос на идентификатор торговой точки
+    /// </summary>
     public class IdentifierRequest
     {
         /// <summary>

@@ -10,7 +10,7 @@ namespace Ict.Service.PointSale.DataBase
 {
     public class PointSaleDbContext : DbContext
     {
-        public DbSet<PointSaleEntity> PointSales { get; set; }
+        public DbSet<PointSaleEntity> PointSaleEntities { get; set; }
         public DbSet<PointSaleActivity> PointSaleActivities { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<OrganizationType> OrganizationTypes { get; set; }
@@ -24,6 +24,8 @@ namespace Ict.Service.PointSale.DataBase
         public DbSet<Description> Descriptions { get; set; }
         public DbSet<OwnerType> OwnerTypes { get; set; }
         public DbSet<PointSaleSchedule> PointSaleSchedules { get; set; }
+        public DbSet<PendingVerification> PendingVerifications { get; set; }
+        public DbSet<Admin> Admins { get; set; }
         public DbSet<CategoryPointSale> CategoryPointSales{ get; set; }
         public DbSet<AlternativeWord> AlternativeWords { get; set; }
 

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.Models.PointSale
 {
+    /// <summary>
+    /// DTO, представляющее данные о деятельности точки продаж.
+    /// </summary>
     public class PointSaleActivityDto
     {
         /// <summary>
@@ -32,20 +35,11 @@ namespace Ict.Service.PointSale.Models.PointSale
         /// <summary>
         /// Дата изменения данных о деятельности.
         /// </summary>
-        public DateOnly OpenDate { get; set; }
-
-
-        /// <summary>
-        /// Электронная почта организации.
-        /// </summary>
-        public string? Email { get; set; }
+        public DateOnly? OpenDate { get; set; }
 
         /// <summary>
-        /// Контактный телефон.
+        /// Дата внесения записи в базу данных.
         /// </summary>
-        public string? Phone { get; set; }
-
-
         public DateTime EntryDate { get; set; }
     }
 }

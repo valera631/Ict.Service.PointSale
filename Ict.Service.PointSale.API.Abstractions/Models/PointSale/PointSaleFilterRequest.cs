@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
 {
+    /// <summary>
+    /// Модель запроса для фильтрации точек продаж.
+    /// </summary>
     public class PointSaleFilterRequest
     {
         /// <summary>
-        /// Имя организации для фильтрации.
+        /// Страка пойска
         /// </summary>
-        public string? Name { get; set; }
+        public string? QueryString { get; set; }
         /// <summary>
         /// Указывает, нужно ли отфильтровать только подтверждённые организации.
         /// true — только подтверждённые,
@@ -27,6 +30,11 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         /// null — не учитывать наличие оператора.
         /// </summary>
         public bool? HasOperator { get; set; }
+
+        /// <summary>
+        /// Идентификатор оператора для фильтрации.
+        /// </summary>
+        public Guid? OperatorId { get; set; }
 
         /// <summary>
         /// Указывает, нужно ли отфильтровать организации, у которых есть филиалы.

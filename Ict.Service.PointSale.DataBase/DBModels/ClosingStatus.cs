@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.DataBase.DBModels
 {
+    /// <summary>
+    /// Представляет статус закрытия точки продаж.
+    /// </summary>
     public class ClosingStatus
     {
         /// <summary>

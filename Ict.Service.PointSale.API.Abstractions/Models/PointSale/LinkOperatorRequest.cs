@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
 {
+    /// <summary>
+    /// Модель запроса для привязки оператора к точке продаж.
+    /// </summary>
     public class LinkOperatorRequest
     {
         /// <summary>

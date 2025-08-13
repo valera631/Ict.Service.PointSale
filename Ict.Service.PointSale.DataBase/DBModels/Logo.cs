@@ -14,8 +14,7 @@ namespace Ict.Service.PointSale.DataBase.DBModels
     /// Класс, представляющий связи торговых точек и их логотипов.
     /// </summary>
 
-    [Index(nameof(OpenDate))]
-    [Index(nameof(PointSaleId))]
+    [Index(nameof(PointSaleId), nameof(OpenDate))]
     public class Logo
     {
         /// <summary>

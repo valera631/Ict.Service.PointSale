@@ -9,8 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ict.Service.PointSale.DataBase.DBModels
 {
-    [Index(nameof(OpenDate))]
-    [Index(nameof(PointSaleId))]
+    [Index(nameof(PointSaleId), nameof(OpenDate))]
     public class Description
     {
         /// <summary>

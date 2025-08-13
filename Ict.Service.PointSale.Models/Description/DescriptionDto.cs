@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.Models.Description
 {
+    /// <summary>
+    /// Dto, представляющие данные описание
+    /// </summary>
     public class DescriptionDto
     {
         /// <summary>
@@ -21,7 +24,7 @@ namespace Ict.Service.PointSale.Models.Description
         /// <summary>
         /// Дата изменения данных.
         /// </summary>
-        public DateOnly OpenDate { get; set; }
+        public DateOnly? OpenDate { get; set; }
 
         /// <summary>
         /// Внешний ключ для таблицы PointSale.

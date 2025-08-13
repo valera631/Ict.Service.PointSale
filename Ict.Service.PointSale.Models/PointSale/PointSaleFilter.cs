@@ -10,9 +10,9 @@ namespace Ict.Service.PointSale.Models.PointSale
     {
 
         /// <summary>
-        /// Имя точки для фильтрации.
+        /// Строка пойска
         /// </summary>
-        public string? Name { get; set; }
+        public string? QueryString { get; set; }
         /// <summary>
         /// Указывает, нужно ли отфильтровать только подтверждённые точки.
         /// true — только подтверждённые,
@@ -28,6 +28,11 @@ namespace Ict.Service.PointSale.Models.PointSale
         /// null — не учитывать наличие оператора.
         /// </summary>
         public bool? HasOperator { get; set; }
+
+        /// <summary>
+        /// Идентификатор оператора для фильтрации организаций.
+        /// </summary>
+        public Guid? OperatorId { get; set; }
 
         /// <summary>
         /// Указывает, нужно ли отфильтровать точки, у которых есть филиалы.

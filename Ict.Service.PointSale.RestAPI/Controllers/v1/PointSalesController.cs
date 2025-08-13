@@ -2,9 +2,11 @@
 using AutoMapper;
 using Ict.ApiResults;
 using Ict.Service.PointSale.API.Abstractions.Models.PointSale;
+using Ict.Service.PointSale.API.Abstractions.Models.Update;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
 using Ict.Service.PointSale.Models;
 using Ict.Service.PointSale.Models.PointSale;
+using Ict.Service.PointSale.Models.Update;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ict.Service.PointSale.RestAPI.Controllers.v1
@@ -39,10 +41,14 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
 
                 // Заполнение PointSaleId во всех связанных объектах
                 pointSaleFullDto.PointSaleActivity.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
-                pointSaleFullDto.Chief.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
-                pointSaleFullDto.Location.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
 
-                if (request.DescriptionText != null)
+                if (pointSaleFullDto.Chief != null)
+                    pointSaleFullDto.Chief.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
+
+                if (pointSaleFullDto.Location != null)
+                    pointSaleFullDto.Location.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
+
+                if (pointSaleFullDto.Description != null)
                     pointSaleFullDto.Description.PointSaleId = pointSaleFullDto.PointSale.PointSaleId;
 
 
@@ -139,6 +145,105 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
 
         }
 
+        [HttpPost("ConfirmIsApproved")]
+        public async Task<ApiResult<bool>> ConfirmPointSaleIsApproved(PoinrSaleIsApprovedRequest request)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var organizationIsApprovedConfirm = new PoinrSaleIsApprovedDto
+                {
+                    PointSaleId = request.PointSaleId
+                };
+
+                var result = await _pointSaleService.ConfirmIsApprovedAsync(organizationIsApprovedConfirm);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = $"Ошибка при подтверждении организации: {ex.Message}";
+            }
+            return operation;
+        }
+
+        [HttpPost("Closing")]
+        public async Task<ApiResult<bool>> ClosePointSale(PointSaleCloseRequest request)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var pointSaleClose = new PointSaleCloseDto
+                {
+                    PointSaleId = request.PointSaleId,
+                    CloseDate = request.CloseDate,
+                    ClosingStatusId = request.ClosingStatusId
+
+                };
+
+                var result = await _pointSaleService.ClosePointSaleAsync(pointSaleClose);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = $"Ошибка при закрытии организации: {ex.Message}";
+            }
+            return operation;
+        }
+
+
+        [HttpPost("SubmitVerification/{pointSaleId}")]
+        public async Task<ApiResult<List<Guid>>> SubmitVerification(Guid pointSaleId)
+        {
+            var operation = ApiResult.CreateResult<List<Guid>>();
+            try
+            {
+                var result = await _pointSaleService.SubmitVerificationAsync(pointSaleId);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+
+        [HttpGet("InfoUpdate")]
+        public async Task<ApiResult<PointSaleFullInfoRequest>> GetPointSaleInfoUpdate(PointSaleDateRequest pointSaleDateRequest)
+        {
+            var operation = ApiResult.CreateResult<PointSaleFullInfoRequest>();
+            try
+            {
+                var pointSale = new PointSaleDate
+                {
+                    OpenDate = pointSaleDateRequest.OpenDate.HasValue
+                       ? DateOnly.FromDateTime(pointSaleDateRequest.OpenDate.Value)
+                       : DateOnly.FromDateTime(DateTime.UtcNow),
+                    PointSaleId = pointSaleDateRequest.PointSaleId
+
+                };
+
+                var result = await _pointSaleService.GetPointSaleDtoAsync(pointSale);
+                if (result.Data != null)
+                {
+                    var organizationResult = _mapper.Map<PointSaleFullInfoRequest>(result.Data);
+
+                    operation.Result = organizationResult;
+                }
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+
+            return operation;
+        }
+
+
 
         /// <summary>
         /// Получает список точек пордаж по фильтру.
@@ -152,14 +257,15 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
 
                 var filter = new PointSaleFilter
                 {
-                    Name = filterRequest.Name,
+                    QueryString = filterRequest.QueryString,
                     IsApproved = filterRequest.IsApproved,
+                    OperatorId = filterRequest.OperatorId,
                     HasOperator = filterRequest.HasOperator,
                     HasNoBranches = filterRequest.HasNoBranches,
                     PageNumber = filterRequest.PageNumber,
                     PageSize = filterRequest.PageSize
                 };
-               
+
                 var results = await _pointSaleService.GetPointSalesByFilterAsync(filter);
                 if (!results.IsSuccess)
                 {
@@ -188,6 +294,108 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
             }
             return operation;
         }
+
+
+        [HttpPut("UpdateName")]
+        public async Task<ApiResult<bool>> UpdatePointSaleName(PointSaleNameUpdateRequest request)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var pointSaleNameUpdateDto = new PointSaleNameUpdateDto
+                {
+                    PointSaleId = request.PointSaleId,
+                    NamePointSale = request.NamePointSale,
+                    EnglishNamePointSale = request.EnglishNamePointSale,
+                    OpenDatePointSale = request.OpenDatePointSale
+                };
+
+                var result = await _pointSaleService.UpdatePointSaleNameAsync(pointSaleNameUpdateDto);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+        [HttpPut("UpdateCreationDate")]
+        public async Task<ApiResult<bool>> UpdatePointSaleCreationDate(PointSaleCreationDateUpdateRequest request)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var creationDateUpdateDto = new CreationDateUpdateDto
+                {
+                    PointSaleId = request.PointSaleId,
+                    CreationDatePointSale = request.CreationDatePointSale
+                };
+                var result = await _pointSaleService.UpdateCreationDateAsync(creationDateUpdateDto);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+        [HttpPut("UpdateWorkSchedule")]
+        public async Task<ApiResult<bool>> UpdateWorkSchedule(PointSaleWorkScheduleUpdateRequest request)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var workScheduleUpdateDto = new WorkScheduleUpdateDto
+                {
+                    PointSaleId = request.PointSaleId,
+                    WorkSchedule = request.WorkSchedule.Select(schedule => new PointSaleScheduleDto
+                    {
+                        PointSaleId = request.PointSaleId,
+                        DayOfWeek = schedule.DayOfWeek,
+                        IsWorkingDay = schedule.IsWorkingDay,
+                        StartTime = schedule.StartTime,
+                        EndTime = schedule.EndTime,
+                        BreakStartTime = schedule.BreakStartTime,
+                        BreakEndTime = schedule.BreakEndTime
+                    }).ToList()
+                };
+                var result = await _pointSaleService.UpdateWorkScheduleAsync(workScheduleUpdateDto);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+        [HttpPut("UpdateCategories")]
+        public async Task<ApiResult<bool>> UpdateCategories(PointSaleCategoriesUpdateRequest request)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var categoriesUpdateDto = new CategoriesUpdateDto
+                {
+                    PointSaleId = request.PointSaleId,
+                    CategoryIds = request.CategoryIds
+                };
+                var result = await _pointSaleService.UpdateCategoriesAsync(categoriesUpdateDto);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
 
         [HttpGet("Count")]
         public async Task<ApiResult<int>> GetCountPointSales()
@@ -314,5 +522,44 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
             return operation;
         }
 
+        [HttpDelete("Owner")]
+        public async Task<ApiResult<bool>> DeleteOwnerFromPointSale(DeleteOwnerRequest deleteOwnerRequest)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+                var deleteOwnerDto = new DeleteOwnerDto
+                {
+                    OwnerId = deleteOwnerRequest.OwnerId
+                };
+                var result = await _pointSaleService.DeleteOwnerAsync(deleteOwnerDto);
+                operation.Result = result.Data;
+                operation.ErrorMessage = result.ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+        }
+
+        [HttpDelete("Delete/{pointSaleId}")]
+        public async Task<ApiResult<bool>> DeletePointSale(Guid pointSaleId)
+        {
+            var operation = ApiResult.CreateResult<bool>();
+            try
+            {
+
+                var result = await _pointSaleService.DeletePointSaleAsync(pointSaleId);
+
+                operation.Result = true; // Предположим, что удаление прошло успешно
+            }
+            catch (Exception ex)
+            {
+                operation.ErrorMessage = ex.Message;
+            }
+            return operation;
+
+        }
     }
 }

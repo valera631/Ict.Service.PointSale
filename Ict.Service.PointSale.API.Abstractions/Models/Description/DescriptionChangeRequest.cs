@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 namespace Ict.Service.PointSale.API.Abstractions.Models.Description
 {
 
+    /// <summary>
+    /// Запрос на изменение описания торговой точки
+    /// </summary>
     public class DescriptionChangeRequest
     {
         /// <summary>

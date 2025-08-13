@@ -14,6 +14,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace Ict.Service.PointSale.Core.Services
 {
+    /// <summary>
+    /// Сервис для работы с фотографиями точек продаж.
+    /// Отвечает за загрузку, получение и удаление логотипов и других фотографий.
+    /// </summary>
     public class PhotoService : IPhotoService
     {
         private readonly IFileConnected _fileConnected;
@@ -21,6 +25,13 @@ namespace Ict.Service.PointSale.Core.Services
         private readonly string _parentId;
 
 
+
+
+        /// <summary>
+        /// Создаёт экземпляр сервиса для работы с фотографиями.
+        /// </summary>
+        /// <param name="fileConnected">Сервис для взаимодействия с файловым хранилищем.</param>
+        /// <param name="photoRepository">Репозиторий для работы с фотографиями в базе данных.</param>
         public PhotoService(IFileConnected fileConnected, IConfiguration configuration, IPhotoRepository  photoRepository)
         {
             _fileConnected = fileConnected;
@@ -30,11 +41,14 @@ namespace Ict.Service.PointSale.Core.Services
         }
 
 
+        /// <summary>
+        /// Асинхронно добавляет логотип для точки продаж.
+        /// </summary>
+        /// <param name="photoContainerDto">DTO с фотографиями и данными о точке продаж.</param>
+        /// <returns>Результат операции с булевым значением успешности.</returns>
         public async Task<OperationResult<bool>> AddLogoAsync(PhotoContainerDto photoContainerDto)
         {
             OperationResult<bool> response = new();
-
-
             try
             {
                 // Проверка на наличие фотографий
@@ -91,10 +105,7 @@ namespace Ict.Service.PointSale.Core.Services
                     response.ErrorMessage = "Не удалось получить ID для всех загруженных файлов.";
                     return response;
                 }
-
-                /// сделать связь 
-
-                var result = await _photoRepository.AddLogoAsync(photoContainerDto.PointSaleId, savedFileId.Value);
+                var result = await _photoRepository.AddLogoAsync(photoContainerDto.PointSaleId, savedFileId.Value, photoContainerDto.OpenDateLogo);
 
                 if (!result.IsSuccess)
                 {
@@ -113,21 +124,28 @@ namespace Ict.Service.PointSale.Core.Services
             return response;
         }
 
+
+        /// <summary>
+        /// Асинхронно получает логотип точки продаж по её идентификатору.
+        /// </summary>
+        /// <param name="pointSaleId">Идентификатор точки продаж.</param>
+        /// <returns>Результат операции с DTO логотипа и его данными.</returns>
         public async Task<OperationResult<PointSalePhotoDto>> GetLogoAsync(Guid pointSaleId)
         {
 
             OperationResult<PointSalePhotoDto> response = new();
             try
             {
+                
                 var logoId = await _photoRepository.GetLogoAsync(pointSaleId);
 
-                if (!logoId.IsSuccess)
+                if (logoId.Data == null)
                 {
                     response.ErrorMessage = logoId.ErrorMessage;
                     return response;
                 }
 
-                var logoRequest = new RequestFileDto { FileId = logoId.Data, IsLastVersions = false };
+                var logoRequest = new RequestFileDto { FileId = logoId.Data.LogoId, IsLastVersions = false };
                 var logoResponse = await _fileConnected.Select(logoRequest);
                 if (!logoResponse.IsSuccess || logoResponse.Result == null)
                 {
@@ -138,6 +156,7 @@ namespace Ict.Service.PointSale.Core.Services
                 {
                     PhotoId = logoResponse.Result.FileId ?? Guid.Empty,
                     PhotoName = logoResponse.Result.Name,
+                    OpenDateLogo = logoId.Data.OpenDateLogo,
                     PhotoContentType = logoResponse.Result.ContentType,
                     IsMain = false,
                     PhotoData = logoResponse.Result.FileSize
@@ -152,6 +171,11 @@ namespace Ict.Service.PointSale.Core.Services
             return response;
         }
 
+        /// <summary>
+        /// Асинхронно добавляет фотографии к точке продаж.
+        /// </summary>
+        /// <param name="photoContainer">DTO с фотографиями и данными о точке продаж.</param>
+        /// <returns>Результат операции с булевым значением успешности.</returns>
         public async Task<OperationResult<bool>> AddPhotoAsync(PhotoContainerDto photoContainer)
         {
             OperationResult<bool> response = new();
@@ -171,8 +195,6 @@ namespace Ict.Service.PointSale.Core.Services
                     response.ErrorMessage = "Идентификатор организации не указан.";
                     return response;
                 }
-
-
 
                 var fileContainer = new FileContainer();
 
@@ -237,6 +259,11 @@ namespace Ict.Service.PointSale.Core.Services
             return response;
         }
 
+        /// <summary>
+        /// Асинхронно получает превью фотографий точки продаж.
+        /// </summary>
+        /// <param name="pointSaleId">Идентификатор точки продаж.</param>
+        /// <returns>Результат операции со списком DTO фотографий.</returns>
         public async Task<OperationResult<List<PointSalePhotoDto>>> GetPreviewsAsync(Guid pointSaleId)
         {
             OperationResult<List<PointSalePhotoDto>> response = new();
@@ -292,6 +319,9 @@ namespace Ict.Service.PointSale.Core.Services
             return response;
         }
 
+        /// <summary>
+        /// Асинхронно удаляет фотографии точки продаж.
+        /// </summary>
         public async Task<OperationResult<List<Guid>>> DeletePhotoAsync(PhotosDeleteDto deletePhotosDto)
         {
             OperationResult<List<Guid>> response = new();

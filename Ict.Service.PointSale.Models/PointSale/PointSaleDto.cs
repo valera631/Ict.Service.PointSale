@@ -28,13 +28,17 @@ namespace Ict.Service.PointSale.Models.PointSale
         /// <summary>
         /// Внешний ключ для таблицы CreationType.
         /// </summary>
-        public int CreationTypeId { get; set; }
+        public int? CreationTypeId { get; set; }
 
+        /// <summary>
+        /// Дата регистрации.
+        /// </summary>
+        public DateOnly? CreationDate { get; set; }
 
         /// <summary>
         /// Внешний ключ для таблицы GuidType.
         /// </summary>
-        public int OrganizationTypeId { get; set; }
+        public int? OrganizationTypeId { get; set; }
 
         /// <summary>
         /// Дата внесения записи в базу данных.

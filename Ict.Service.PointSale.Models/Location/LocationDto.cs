@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.Models.Location
 {
+    /// <summary>
+    /// DTO, представляющий данные о локации точки продаж.
+    /// </summary>
     public class LocationDto
     {
         /// <summary>
@@ -16,18 +19,30 @@ namespace Ict.Service.PointSale.Models.Location
         /// <summary>
         /// Дата изменения данных.
         /// </summary>
-        public DateOnly OpenDate { get; set; }
+        public DateOnly? OpenDate { get; set; }
 
         /// <summary>
         /// Адрес локации.
         /// </summary>
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
-        public float Latitude { get; set; }
+        /// <summary>
+        /// Географическая широта.
+        /// Может быть null, если координаты не заданы.
+        /// </summary>
+        public float? Latitude { get; set; }
 
-        public float Longitude { get; set; }
+        /// <summary>
+        /// Географическая долгота.
+        /// Может быть null, если координаты не заданы.
+        /// </summary>
+        public float? Longitude { get; set; }
 
-        public string AddressId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Идентификатор адреса в сервисе локации.
+        /// </summary>
+        public string? AddressId { get; set; } = string.Empty;
 
         /// <summary>
         /// Внешний ключ для таблицы PointSales.
@@ -35,7 +50,9 @@ namespace Ict.Service.PointSale.Models.Location
         /// </summary>
         public Guid? PointSaleId { get; set; }
 
-
+        /// <summary>
+        /// Дата внесения записи в базу данных.
+        /// </summary>
         public DateTime EntryDate { get; set; }
 
     }

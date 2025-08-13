@@ -15,7 +15,7 @@ namespace Ict.Service.PointSale.DataBase.DBModels
     /// <summary>
     /// Класс, описывающий руководителя торговой точки.
     /// </summary>
-    [Index(nameof(OpenDate))]
+    [Index(nameof(PointSaleId), nameof(OpenDate))]
     public class Chief
     {
         /// <summary>

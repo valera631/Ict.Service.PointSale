@@ -23,17 +23,26 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         /// </summary>
         public int? OwnerTypeId { get; set; }
 
+        /// <summary>
+        /// Имя владельца точки продаж.
+        /// </summary>
         public string? OwnerName { get; set; } 
 
         /// <summary>
         /// Индификатор типа создания.
         /// </summary>
-        public int CreationTypeId { get; set; }
+        public int? CreationTypeId { get; set; }
+
+
+        /// <summary>
+        /// Время регистрации
+        /// </summary>
+        public DateOnly? CreationDatePointSale { get; set; }
 
         /// <summary>
         /// Индификатор типа организации.
         /// </summary>
-        public int OrganizationTypeId { get; set; }
+        public int? OrganizationTypeId { get; set; }
 
         /// <summary>
         /// Название точки продаж.
@@ -48,56 +57,70 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
         /// <summary>
         /// Дата открытия точки продажи.
         /// </summary>
-        public DateOnly OpenDatePointSale { get; set; }
-
-        /// <summary>
-        /// Электронная почта организации.
-        /// </summary>
-        public string? Email { get; set; }
-
-        /// <summary>
-        /// Контактный телефон.
-        /// </summary>
-        public string? Phone { get; set; }
+        public DateOnly? OpenDatePointSale { get; set; }
 
         /// <summary>
         /// Дата назначения руководителя.
         /// </summary>
-        public DateOnly OpenDateChif { get; set; }
+        public DateOnly? OpenDateChief { get; set; }
+
+
+
+        /// <summary>
+        /// Дата добовление описание.
+        /// </summary>
+        public DateOnly? OpenDateDescription { get; set; }
 
         /// <summary>
         /// Имя руководителя организации.
         /// </summary>
         public string? ChiefName { get; set; }
 
+        /// <summary>
+        /// Описание точки продаж.
+        /// </summary>
         public string? DescriptionText { get; set; }
 
         /// <summary>
         /// Индификатор должности руководителя организации.
         /// </summary>
-        public int ChiefPositionId { get; set; }
+        public int? ChiefPositionId { get; set; }
 
         /// <summary>
         /// Дата изменения данных.
         /// </summary>
-        public DateOnly OpenDateLocation { get; set; }
+        public DateOnly? OpenDateLocation { get; set; }
 
         /// <summary>
         /// Адрес локации.
         /// </summary>
-        public string Address { get; set; } = null!;
+        public string? Address { get; set; } = null!;
 
-        public float Latitude { get; set; }
+        /// <summary>
+        /// Широта и долгота точки продаж.
+        /// </summary>
+        public float? Latitude { get; set; }
 
-        public float Longitude { get; set; }
+        public float? Longitude { get; set; }
 
-        public string LocationId { get; set; } = string.Empty;
+        /// <summary>
+        /// Идентификатор локации.
+        /// </summary>
+        public string? LocationId { get; set; } = string.Empty;
 
-
+        /// <summary>
+        /// Список альтернативных названий точки продаж.
+        /// </summary>
         public List<string> AlternativeName { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Список идентификаторов категорий, к которым принадлежит точка продаж.
+        /// </summary>
         public List<int> CategoryIds { get; set; } = new List<int>();
 
+        /// <summary>
+        /// График работы точки продаж.
+        /// </summary>
         public List<WorkScheduleRequest> WorkSchedule { get; set; } = new List<WorkScheduleRequest>();
     }
 }

@@ -19,6 +19,7 @@ namespace Ict.Service.PointSale.Models
         /// </summary>
         public List<T> Items { get; set; } = new List<T>();
 
+
         /// <summary>
         /// Общее количество элементов, соответствующих фильтру, во всех страницах.
         /// Используется для расчета общего количества страниц.

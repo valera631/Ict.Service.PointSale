@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.DataBase.DBModels
 {
+    /// <summary>
+    /// Представляет оператора, связанного с одной или несколькими точками продаж.
+    /// </summary>
     public class Operator
     {
+        /// <summary>
+        /// Уникальный идентификатор оператора.
+        /// </summary>
         [Key]
         public Guid OperatorId { get; set; }
 

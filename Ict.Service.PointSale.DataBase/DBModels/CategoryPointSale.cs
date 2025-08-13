@@ -34,7 +34,9 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         /// </summary>
         public bool IsEnabled { get; set; }
 
-
+        /// <summary>
+        /// Путь до категории
+        /// </summary>
         public string Path { get; set; } = null!;
 
 

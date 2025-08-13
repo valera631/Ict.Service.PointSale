@@ -37,6 +37,17 @@ namespace Ict.Service.PointSale.DataBase.Migrations
                     b.ToTable("CategoryPointSalePointSaleEntity");
                 });
 
+            modelBuilder.Entity("Ict.Service.PointSale.DataBase.DBModels.Admin", b =>
+                {
+                    b.Property<Guid>("AdminId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AdminId");
+
+                    b.ToTable("Admins");
+                });
+
             modelBuilder.Entity("Ict.Service.PointSale.DataBase.DBModels.AlternativeWord", b =>
                 {
                     b.Property<Guid>("AlternativeWordId")
@@ -113,9 +124,7 @@ namespace Ict.Service.PointSale.DataBase.Migrations
 
                     b.HasIndex("ChiefPositionId");
 
-                    b.HasIndex("OpenDate");
-
-                    b.HasIndex("PointSaleId");
+                    b.HasIndex("PointSaleId", "OpenDate");
 
                     b.ToTable("Chiefs");
                 });
@@ -192,9 +201,7 @@ namespace Ict.Service.PointSale.DataBase.Migrations
 
                     b.HasKey("DescriptionId");
 
-                    b.HasIndex("OpenDate");
-
-                    b.HasIndex("PointSaleId");
+                    b.HasIndex("PointSaleId", "OpenDate");
 
                     b.ToTable("Descriptions");
                 });
@@ -233,9 +240,7 @@ namespace Ict.Service.PointSale.DataBase.Migrations
 
                     b.HasKey("LocationId");
 
-                    b.HasIndex("OpenDate");
-
-                    b.HasIndex("PointSaleId");
+                    b.HasIndex("PointSaleId", "OpenDate");
 
                     b.ToTable("Locations");
                 });
@@ -257,9 +262,7 @@ namespace Ict.Service.PointSale.DataBase.Migrations
 
                     b.HasKey("LogoId");
 
-                    b.HasIndex("OpenDate");
-
-                    b.HasIndex("PointSaleId");
+                    b.HasIndex("PointSaleId", "OpenDate");
 
                     b.ToTable("Logos");
                 });
@@ -309,6 +312,17 @@ namespace Ict.Service.PointSale.DataBase.Migrations
                     b.ToTable("OwnerTypes");
                 });
 
+            modelBuilder.Entity("Ict.Service.PointSale.DataBase.DBModels.PendingVerification", b =>
+                {
+                    b.Property<Guid>("PointSaleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PointSaleId");
+
+                    b.ToTable("PendingVerifications");
+                });
+
             modelBuilder.Entity("Ict.Service.PointSale.DataBase.DBModels.Photo", b =>
                 {
                     b.Property<Guid>("PhotoId")
@@ -334,9 +348,6 @@ namespace Ict.Service.PointSale.DataBase.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("EnglishNamePointSale")
                         .HasColumnType("nvarchar(max)");
 
@@ -347,18 +358,15 @@ namespace Ict.Service.PointSale.DataBase.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly?>("OpenDate")
+                    b.Property<DateOnly>("OpenDate")
                         .HasColumnType("date");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("PointSaleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("PointSaleActivityId");
 
-                    b.HasIndex("PointSaleId");
+                    b.HasIndex("PointSaleId", "OpenDate");
 
                     b.ToTable("PointSaleActivities");
                 });
@@ -375,7 +383,10 @@ namespace Ict.Service.PointSale.DataBase.Migrations
                     b.Property<int?>("ClosingStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CreationTypeId")
+                    b.Property<DateOnly?>("CreationDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("CreationTypeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EntryDate")
@@ -384,7 +395,7 @@ namespace Ict.Service.PointSale.DataBase.Migrations
                     b.Property<bool>("IsAproved")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OrganizationTypeId")
+                    b.Property<int?>("OrganizationTypeId")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("OwnerId")
@@ -409,7 +420,7 @@ namespace Ict.Service.PointSale.DataBase.Migrations
 
                     b.HasIndex("OwnerTypeId");
 
-                    b.ToTable("PointSales");
+                    b.ToTable("PointSaleEntities");
                 });
 
             modelBuilder.Entity("Ict.Service.PointSale.DataBase.DBModels.PointSaleSchedule", b =>
@@ -569,15 +580,11 @@ namespace Ict.Service.PointSale.DataBase.Migrations
 
                     b.HasOne("Ict.Service.PointSale.DataBase.DBModels.CreationType", "CreationType")
                         .WithMany("PointSales")
-                        .HasForeignKey("CreationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreationTypeId");
 
                     b.HasOne("Ict.Service.PointSale.DataBase.DBModels.OrganizationType", "OrganizationType")
                         .WithMany("PointSales")
-                        .HasForeignKey("OrganizationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrganizationTypeId");
 
                     b.HasOne("Ict.Service.PointSale.DataBase.DBModels.OwnerType", "OwnerType")
                         .WithMany("PointSales")

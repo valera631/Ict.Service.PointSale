@@ -13,7 +13,7 @@ namespace Ict.Service.PointSale.DataBase.DBModels
     /// <summary>
     /// Класс, представляющий сущность "Локации".
     /// </summary>
-    [Index(nameof(OpenDate))]
+    [Index(nameof(PointSaleId), nameof(OpenDate))]
     public class Location
     {
         /// <summary>
@@ -32,11 +32,19 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         /// </summary>
         public string Address { get; set; } = null!;
 
-
+        /// <summary>
+        /// Географическая широта локации.
+        /// </summary>
         public float Latitude { get; set; }
 
+        /// <summary>
+        /// Географическая долгота локации.
+        /// </summary>
         public float Longitude { get; set; }
 
+        /// <summary>
+        /// Внешний идентификатор адреса (из сервиса location).
+        /// </summary>
         public string AddressId { get; set; } = string.Empty;
 
 

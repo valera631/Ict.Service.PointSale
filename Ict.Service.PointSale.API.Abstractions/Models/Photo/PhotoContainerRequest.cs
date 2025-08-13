@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.Photo
 {
+    /// <summary>
+    /// Запрос на загрузку фотографий для торговой точки.
+    /// </summary>
     public class PhotoContainerRequest
     {
         /// <summary>
@@ -13,6 +16,14 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.Photo
         /// </summary>
         public Guid PointSaleId { get; set; }
 
+        /// <summary>
+        /// Дата открытия точки продаж, для которой загружается логотип.
+        /// </summary>
+        public DateOnly OpenDateLogo { get; set; }
+
+        /// <summary>
+        /// Список фотографий, которые необходимо загрузить.
+        /// </summary>
         public List<PhotoItemRequest> Photos { get; set; } = new List<PhotoItemRequest>();
     }
 }

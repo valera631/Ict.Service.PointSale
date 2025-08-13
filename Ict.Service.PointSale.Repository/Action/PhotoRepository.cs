@@ -7,11 +7,15 @@ using System.Threading.Tasks;
 using Ict.Service.PointSale.DataBase;
 using Ict.Service.PointSale.DataBase.DBModels;
 using Ict.Service.PointSale.Models;
+using Ict.Service.PointSale.Models.Photo;
 using Ict.Service.PointSale.Repository.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ict.Service.PointSale.Repository.Action
 {
+    /// <summary>
+    /// Репозиторий для работы с фотографиями и логотипами торговых точек.
+    /// </summary>
     public class PhotoRepository : IPhotoRepository
     {
 
@@ -22,13 +26,21 @@ namespace Ict.Service.PointSale.Repository.Action
             _pointSaleDbContext = pointSaleDbContext;
         }
 
-        public async Task<OperationResult<bool>> AddLogoAsync(Guid pointSaleId, Guid logoId)
+
+        /// <summary>
+        /// Асинхронно добавляет логотип к торговой точке.
+        /// </summary>
+        /// <param name="pointSaleId">Идентификатор торговой точки.</param>
+        /// <param name="logoId">Идентификатор логотипа (фото).</param>
+        /// <param name="OpenDateLogo">Дата открытия/создания логотипа.</param>
+        /// <returns>Результат операции с признаком успешности.</returns>
+        public async Task<OperationResult<bool>> AddLogoAsync(Guid pointSaleId, Guid logoId, DateOnly OpenDateLogo)
         {
             OperationResult<bool> response = new();
 
             try
             {
-                var pointSale = await _pointSaleDbContext.PointSales
+                var pointSale = await _pointSaleDbContext.PointSaleEntities
                     .FirstOrDefaultAsync(p => p.PointSaleId == pointSaleId);
 
                 if ( pointSale== null)
@@ -40,7 +52,7 @@ namespace Ict.Service.PointSale.Repository.Action
                 {
                     PointSaleId = pointSaleId,
                     LogoId = logoId,
-                    OpenDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                    OpenDate = OpenDateLogo,
                     EntryDate = DateTime.UtcNow
                 };
 
@@ -61,6 +73,13 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
+        /// <summary>
+        /// Асинхронно добавляет список фотографий к торговой точке.
+        /// Первое фото автоматически назначается главным, если главного ещё нет.
+        /// </summary>
+        /// <param name="pointSaleId">Идентификатор торговой точки.</param>
+        /// <param name="photoId">Список идентификаторов фотографий для добавления.</param>
+        /// <returns>Результат операции с признаком успешности.</returns>
         public async Task<OperationResult<bool>> AddPhotoAsync(Guid pointSaleId, List<Guid?> photoId)
         {
 
@@ -68,7 +87,7 @@ namespace Ict.Service.PointSale.Repository.Action
 
             try
             {
-                var pointSale = await _pointSaleDbContext.PointSales
+                var pointSale = await _pointSaleDbContext.PointSaleEntities
                     .FirstOrDefaultAsync(p => p.PointSaleId == pointSaleId);
 
                 if (pointSale == null) 
@@ -120,6 +139,12 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
+        /// <summary>
+        /// Асинхронно удаляет указанные фотографии у торговой точки.
+        /// </summary>
+        /// <param name="pointSaleId">Идентификатор торговой точки.</param>
+        /// <param name="photoIds">Список идентификаторов фотографий для удаления.</param>
+        /// <returns>Результат операции с списком удалённых идентификаторов.</returns>
         public async Task<OperationResult<List<Guid>>> DeletePhotosAsync(Guid pointSaleId, List<Guid> photoIds)
         {
             OperationResult<List<Guid>> response = new();
@@ -139,7 +164,7 @@ namespace Ict.Service.PointSale.Repository.Action
                     return response;
                 }
 
-                var pointSaleExist = await _pointSaleDbContext.PointSales
+                var pointSaleExist = await _pointSaleDbContext.PointSaleEntities
                     .AnyAsync(p => p.PointSaleId == pointSaleId);
 
                 if (!pointSaleExist)
@@ -177,12 +202,18 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
-        public async Task<OperationResult<Guid>> GetLogoAsync(Guid pointSaleId)
+
+        /// <summary>
+        /// Получает последний логотип торговой точки по дате открытия.
+        /// </summary>
+        /// <param name="pointSaleId">Идентификатор торговой точки.</param>
+        /// <returns>Результат операции с DTO логотипа.</returns>
+        public async Task<OperationResult<LogoDto>> GetLogoAsync(Guid pointSaleId)
         {
-            OperationResult<Guid> response = new();
+            OperationResult<LogoDto> response = new();
             try
             {
-                var pointSaleExist = await _pointSaleDbContext.PointSales
+                var pointSaleExist = await _pointSaleDbContext.PointSaleEntities
                     .AnyAsync(p => p.PointSaleId == pointSaleId);
 
                 if (!pointSaleExist)
@@ -192,9 +223,14 @@ namespace Ict.Service.PointSale.Repository.Action
                 }
 
                 var logoId = await _pointSaleDbContext.Logos
-                    .Where(p => p.PointSaleId == pointSaleId)
-                    .Select(p => p.LogoId)
-                    .FirstOrDefaultAsync();
+                  .Where(p => p.PointSaleId == pointSaleId)
+                  .OrderByDescending(p => p.OpenDate) // Сортировка по дате создания
+                  .Select(ol => new LogoDto
+                  {
+                     LogoId = ol.LogoId,
+                     OpenDateLogo = ol.OpenDate
+                 })
+                 .FirstOrDefaultAsync();
 
                 response.Data = logoId;
             }
@@ -206,6 +242,45 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
+        /// <summary>
+        /// Получает список всех идентификаторов логотипов, связанных с торговой точкой.
+        /// </summary>
+        /// <param name="pointSaleId">Идентификатор торговой точки.</param>
+        public async Task<OperationResult<List<Guid>>> GetLogoIdAsync(Guid pointSaleId)
+        {
+            OperationResult<List<Guid>> response = new();
+            try
+            {
+                var pointSaleExist = await _pointSaleDbContext.PointSaleEntities
+                    .AnyAsync(p => p.PointSaleId == pointSaleId);
+                if (!pointSaleExist)
+                    {
+                    response.ErrorMessage = "Магазин не найден";
+                    return response;
+                }
+
+                var logoIds = await _pointSaleDbContext.Logos
+                    .Where(p => p.PointSaleId == pointSaleId)
+                    .Select(p => p.LogoId)
+                    .ToListAsync();
+
+                response.Data = logoIds ?? new List<Guid>();
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.Data = new List<Guid>();
+            }
+            return response;
+        }
+
+        /// <summary>
+        /// Получает список идентификаторов фотографий по списку id для заданной торговой точки.
+        /// </summary>
+        /// <param name="pointSaleId">Идентификатор торговой точки.</param>
+        /// <param name="photoIds">Список идентификаторов фотографий.</param>
+        /// <returns>Результат операции со списком найденных идентификаторов.</returns>
         public async Task<OperationResult<List<Guid>>> GetPhotosByIdsAsync(Guid pointSaleId, List<Guid> photoIds)
         {
             OperationResult<List<Guid>> response = new();
@@ -227,7 +302,7 @@ namespace Ict.Service.PointSale.Repository.Action
                 }
 
 
-                var pointSaleExist = await _pointSaleDbContext.PointSales
+                var pointSaleExist = await _pointSaleDbContext.PointSaleEntities
                     .AnyAsync(p => p.PointSaleId == pointSaleId);
 
 
@@ -253,13 +328,16 @@ namespace Ict.Service.PointSale.Repository.Action
             return response;
         }
 
+        /// <summary>
+        /// Получает все фотографии (preview) торговой точки.
+        /// </summary>
         public async Task<OperationResult<List<Guid>>> GetPreviewsAsync(Guid pointSaleId)
         {
             OperationResult<List<Guid>> response = new();
 
             try
             {
-                var pointSaleExist = _pointSaleDbContext.PointSales
+                var pointSaleExist = _pointSaleDbContext.PointSaleEntities
                     .Any(p => p.PointSaleId == pointSaleId);
 
                 if (!pointSaleExist)

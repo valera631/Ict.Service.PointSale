@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.DataBase.DBModels
 {
+
     public class Photo
     {
         /// <summary>

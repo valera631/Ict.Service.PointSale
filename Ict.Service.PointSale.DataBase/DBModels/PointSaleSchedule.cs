@@ -5,16 +5,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ict.Service.PointSale.DataBase.DBModels
 {
     /// <summary>
     /// Таблица расписания работы торговой точки.
     /// </summary>
+    [Index(nameof(PointSaleId))]
     public class PointSaleSchedule
     {
+        /// <summary>
+        /// Уникальный идентификатор записи расписания.
+        /// </summary>
         [Key]
         public Guid PointSaleScheduleId {get; set; }
+
+
+        /// <summary>
+        /// Внешний ключ, указывающий на торговую точку, к которой относится расписание.
+        /// </summary>
         public Guid PointSaleId { get; set; }
 
         /// <summary>
@@ -43,6 +53,9 @@ namespace Ict.Service.PointSale.DataBase.DBModels
         public TimeSpan? BreakStartTime { get; set; }
         public TimeSpan? BreakEndTime { get; set; }
 
+        /// <summary>
+        /// Навигационное свойство для связи с торговой точкой.
+        /// </summary>
         [ForeignKey("PointSaleId")]
         public PointSaleEntity PointSale { get; set; }
 

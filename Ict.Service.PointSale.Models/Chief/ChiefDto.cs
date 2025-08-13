@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.Models.Chief
 {
+    /// <summary>
+    /// DTO, представляющий данные руководителя точки продаж.
+    /// </summary>
     public class ChiefDto
     {
         /// <summary>
@@ -16,17 +19,17 @@ namespace Ict.Service.PointSale.Models.Chief
         /// <summary>
         /// Дата назначения руководителя.
         /// </summary>
-        public DateOnly OpenDate { get; set; }
+        public DateOnly? OpenDate { get; set; }
 
         /// <summary>
         /// Имя директора организации.
         /// </summary>
-        public string ChiefName { get; set; } = null!;
+        public string? ChiefName { get; set; }
 
         /// <summary>
         /// Должность директора организации.
         /// </summary>
-        public int ChiefPositionId { get; set; }
+        public int? ChiefPositionId { get; set; }
 
         /// <summary>
         /// Индификатор точки продажи, к которой принадлежит шеф 

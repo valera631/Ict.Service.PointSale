@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
 {
+    /// <summary>
+    /// Модель запроса для получения информации о торговой точке на определенную дату.
+    /// </summary>
     public class PointSaleDateRequest
     {
         /// <summary>

@@ -11,7 +11,14 @@ namespace Ict.Service.PointSale.API.Abstractions.Models.References
     /// </summary>
     public class LookupItemResponse
     {
+        /// <summary>
+        /// Идентификатор элемента справочника.
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Название элемента справочника.
+        /// </summary>
         public string Name { get; set; } = string.Empty;
     }
 }

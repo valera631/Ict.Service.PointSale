@@ -30,6 +30,7 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
                 var logoUploadDto = new PhotoContainerDto
                 {
                     PointSaleId = logoUploadRequest.PointSaleId,
+                    OpenDateLogo = logoUploadRequest.OpenDateLogo,
                     Photos = logoUploadRequest.Photos.Select(p => new PhotoItemDto
                     {
                         ImageId = p.ImageId,
@@ -107,6 +108,7 @@ namespace Ict.Service.PointSale.RestAPI.Controllers.v1
                 {
                     PhotoId = logo.PhotoId,
                     PhotoData = Convert.ToBase64String(logo.PhotoData),
+                    OpenDateLogo = logo.OpenDateLogo,
                     PhotoName = logo.PhotoName,
                     IsMain = logo.IsMain,
                     PhotoContentType = logo.PhotoContentType

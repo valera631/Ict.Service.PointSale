@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.Photo
 {
+    /// <summary>
+    /// Запрос на загрузку фотографии для торговой точки.
+    /// </summary>
     public class PhotoItemRequest
     {
         /// <summary>
         /// Уникальный идентификатор фотографии.
         /// </summary>
         public Guid ImageId { get; set; }
+
         /// <summary>
         /// Массив байтов, представляющий изображение.
         /// </summary>

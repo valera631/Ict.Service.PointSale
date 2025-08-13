@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ict.Service.PointSale.API.Abstractions.Models.PointSale
 {
+    /// <summary>
+    /// Модель запроса для отвязки оператора от точки продаж.
+    /// </summary>
     public class OperatorUnlinkRequest
     {
         /// <summary>

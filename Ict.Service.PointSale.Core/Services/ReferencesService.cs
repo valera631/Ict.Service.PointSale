@@ -10,6 +10,10 @@ using Ict.Service.PointSale.Repository.Abstractions.Interfaces;
 
 namespace Ict.Service.PointSale.Core.Services
 {
+
+    /// <summary>
+    /// Сервис для получения справочных данных, таких как типы создания, организации, должностей и категорий.
+    /// </summary>
     public class ReferencesService : IReferencesService
     {
 
@@ -20,6 +24,9 @@ namespace Ict.Service.PointSale.Core.Services
             _referencesRepository = referencesRepository;
         }
 
+        /// <summary>
+        /// Асинхронно получает все необходимые типы и категории для точек продаж.
+        /// </summary>
         public async Task<OperationResult<PointSaleTypesDto>> GetAllTypesAsync()
         {
             OperationResult<PointSaleTypesDto> response = new();

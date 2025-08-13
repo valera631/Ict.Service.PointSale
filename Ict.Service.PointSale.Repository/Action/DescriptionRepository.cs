@@ -8,80 +8,90 @@ using Ict.Service.PointSale.DataBase;
 using Ict.Service.PointSale.DataBase.DBModels;
 using Ict.Service.PointSale.Models;
 using Ict.Service.PointSale.Models.Description;
+using Ict.Service.PointSale.Models.Update;
 using Ict.Service.PointSale.Repository.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ict.Service.PointSale.Repository.Action
 {
+
+    /// <summary>
+    /// Репозиторий для управления описаниями торговых точек.
+    /// </summary>
     public class DescriptionRepository : IDescriptionRepository
     {
 
         private readonly PointSaleDbContext _pointSaleDbContext;
-        private readonly IMapper _mapper;
 
-        public DescriptionRepository(PointSaleDbContext pointSaleDbContext, IMapper mapper)
+        public DescriptionRepository(PointSaleDbContext pointSaleDbContext)
         {
             _pointSaleDbContext = pointSaleDbContext;
-            _mapper = mapper;
         }
 
 
-        public async Task<OperationResult<Guid>> ChangeDescriptionAsync(DescriptionChangeDto descriptionChangeDto)
-        {
-            OperationResult<Guid> response = new OperationResult<Guid>();
 
+        /// <summary>
+        /// Асинхронно обновляет или создаёт описание торговой точки.
+        /// </summary>
+        public async Task<OperationResult<bool>> UpdateDescriptionAsync(DescriptionUpdateDto descriptionUpdate)
+        {
+            OperationResult<bool> response = new();
             try
             {
-                var newDescription = new Description()
+                // 1. Проверяем существование торговой точки.
+                var pointSaleExists = await _pointSaleDbContext.PointSaleEntities
+                    .AnyAsync(p => p.PointSaleId == descriptionUpdate.PointSaleId);
+
+                if (!pointSaleExists)
                 {
-                    DescriptionId = Guid.NewGuid(),
-                    PointSaleId = descriptionChangeDto.PointSaleId,
-                    DescriptionText = descriptionChangeDto.DescriptionText,
-                    OpenDate = DateOnly.FromDateTime(DateTime.Now),
-                    EntryDate = DateTime.Now
-                };
-
-                await _pointSaleDbContext.Descriptions.AddAsync(newDescription);
-
-                await _pointSaleDbContext.SaveChangesAsync();
-                response.Data = newDescription.DescriptionId;
-
-            }
-            catch (Exception ex)
-            {
-                response.ErrorMessage = ex.Message;
-                return response;
-            }
-            return response;
-        }
-
-        public async Task<OperationResult<Guid>> UpdateDescriptionAsync(DescriptionChangeDto descriptionChange)
-        {
-            OperationResult<Guid> response = new();
-            try
-            {
-                // Find the most recent description for the organization
-                var latestDescription = await _pointSaleDbContext.Descriptions
-                    .Where(d => d.PointSaleId == descriptionChange.PointSaleId)
-                    .OrderByDescending(d => d.EntryDate)
-                    .FirstOrDefaultAsync();
-
-                if (latestDescription == null)
-                {
-                    response.ErrorMessage = "No description found for the specified organization.";
+                    response.ErrorMessage = "Торговая точка с указанным PointSaleId не найдена.";
                     return response;
                 }
 
-                latestDescription.DescriptionText = descriptionChange.DescriptionText;
-                latestDescription.EntryDate = DateTime.Now;
+                // 2. Попытаться найти существующую запись описания.
+                var existingDescription = await _pointSaleDbContext.Descriptions
+                    .FirstOrDefaultAsync(d => d.PointSaleId == descriptionUpdate.PointSaleId &&
+                                             d.OpenDate == descriptionUpdate.OpenDateDescription);
 
+                if (existingDescription != null)
+                {
+                    // 3. Если запись найдена, обновляем её.
+                    existingDescription.DescriptionText = descriptionUpdate.DescriptionText;
+                    _pointSaleDbContext.Descriptions.Update(existingDescription);
+                }
+                else
+                {
+                    // 4. Если запись не найдена, создаём новую.
+                    Description? previousDescription = null;
+                        previousDescription = await _pointSaleDbContext.Descriptions
+                            .Where(d => d.PointSaleId == descriptionUpdate.PointSaleId &&
+                                        d.OpenDate < descriptionUpdate.OpenDateDescription)
+                            .OrderByDescending(d => d.OpenDate)
+                            .FirstOrDefaultAsync();
+                    
+
+                    // Создаем новую запись описания.
+                    var newDescription = new Description
+                    {
+                        DescriptionId = Guid.NewGuid(),
+                        PointSaleId = descriptionUpdate.PointSaleId,
+                        DescriptionText = descriptionUpdate.DescriptionText,
+                        OpenDate = descriptionUpdate.OpenDateDescription,
+                        EntryDate = DateTime.UtcNow,
+                       
+                    };
+
+                    await _pointSaleDbContext.Descriptions.AddAsync(newDescription);
+                }
+
+                // 5. Сохраняем все изменения в базе данных.
                 await _pointSaleDbContext.SaveChangesAsync();
-                response.Data = latestDescription.DescriptionId;
+                response.Data = true;
             }
             catch (Exception ex)
             {
-                response.ErrorMessage = ex.Message;
-                return response;
+                response.ErrorMessage = "Произошла ошибка при обновлении описания торговой точки: " + ex.Message;
+                response.Data = false;
             }
 
             return response;
