@@ -7,13 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ict.ApiProviderCore" Version="8.0.66" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Ict.Service.File.Models">
-      <HintPath>Ict.Service.File.Models.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\Ict.Service.File\Ict.Provider.Service.File\Ict.Provider.Service.File.csproj" />
   </ItemGroup>
 
 </Project>

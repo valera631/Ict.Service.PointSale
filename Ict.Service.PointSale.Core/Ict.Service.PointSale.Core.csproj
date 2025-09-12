@@ -19,10 +19,4 @@
     <ProjectReference Include="..\Ict.Service.PointSale.Repository.Abstractions\Ict.Service.PointSale.Repository.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Ict.Service.File.Models">
-      <HintPath>..\Ict.Service.PointSale.Connector.File\Ict.Service.File.Models.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

@@ -1,5 +1,5 @@
 using Ict.ApiProvider;
-using Ict.Service.PointSale.Connector.File;
+using Ict.Provider.Service.File;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
 using Ict.Service.PointSale.Core.Interfaces;
 using Ict.Service.PointSale.Core.Mapper;
@@ -34,10 +34,13 @@ builder.Services.AddDbContext<PointSaleDbContext>(options =>
 
 });
 
+builder.Services.AddFileService(options =>
+{
+    options.ServiceFileUrl = builder.Configuration.GetSection("Service.File:Url").Value ?? "";
+});
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddApiProvider();
-builder.Services.AddFileService();
 builder.Services.AddScoped<IPointSaleService, PointSaleService>();
 builder.Services.AddScoped<IDescriptionService, DescriptionService>();
 builder.Services.AddScoped<IDescriptionRepository, DescriptionRepository>();

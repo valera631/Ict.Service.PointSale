@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Ict.Provider.Service.File.Interface;
 using Ict.Service.File.Models.File;
-using Ict.Service.Organization.Connector.File.Interface;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
 using Ict.Service.PointSale.Core.Interfaces;
 using Ict.Service.PointSale.Models;
@@ -23,7 +18,7 @@ namespace Ict.Service.PointSale.Core.Services
 
         private readonly IPointSaleRepository _pointSaleRepository;
         private readonly IPhotoRepository _photoRepository;
-        private readonly IFileConnected _fileConnected;
+        private readonly IFileProvider _fileConnected;
         private readonly IPointSaleSearch _pointSaleSearch;
 
         /// <summary>
@@ -33,7 +28,7 @@ namespace Ict.Service.PointSale.Core.Services
         /// <param name="pointSaleSearch">Сервис для поиска и фильтрации точек продаж.</param>
         /// <param name="photoRepository">Репозиторий для работы с фотографиями точек продаж.</param>
         /// <param name="fileConnected">Сервис для взаимодействия с файловым хранилищем.</param>
-        public PointSaleService(IPointSaleRepository pointSaleRepository, IPointSaleSearch pointSaleSearch, IPhotoRepository photoRepository, IFileConnected fileConnected)
+        public PointSaleService(IPointSaleRepository pointSaleRepository, IPointSaleSearch pointSaleSearch, IPhotoRepository photoRepository, IFileProvider fileConnected)
         {
             _pointSaleRepository = pointSaleRepository;
             _pointSaleSearch = pointSaleSearch;

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Azure;
+﻿using Ict.Provider.Service.File.Interface;
 using Ict.Service.File.Models.File;
-using Ict.Service.Organization.Connector.File.Interface;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
 using Ict.Service.PointSale.Models;
 using Ict.Service.PointSale.Models.Photo;
@@ -20,7 +14,7 @@ namespace Ict.Service.PointSale.Core.Services
     /// </summary>
     public class PhotoService : IPhotoService
     {
-        private readonly IFileConnected _fileConnected;
+        private readonly IFileProvider _fileConnected;
         public readonly IPhotoRepository _photoRepository;
         private readonly string _parentId;
 
@@ -32,7 +26,7 @@ namespace Ict.Service.PointSale.Core.Services
         /// </summary>
         /// <param name="fileConnected">Сервис для взаимодействия с файловым хранилищем.</param>
         /// <param name="photoRepository">Репозиторий для работы с фотографиями в базе данных.</param>
-        public PhotoService(IFileConnected fileConnected, IConfiguration configuration, IPhotoRepository  photoRepository)
+        public PhotoService(IFileProvider fileConnected, IConfiguration configuration, IPhotoRepository  photoRepository)
         {
             _fileConnected = fileConnected;
             _parentId = configuration["Service.Pointsale:PointsaleId"] ??
