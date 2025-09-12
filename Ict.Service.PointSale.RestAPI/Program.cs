@@ -1,3 +1,5 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Ict.ApiProvider;
 using Ict.Provider.Service.File;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
@@ -7,9 +9,13 @@ using Ict.Service.PointSale.Core.Services;
 using Ict.Service.PointSale.DataBase;
 using Ict.Service.PointSale.Repository.Abstractions.Interfaces;
 using Ict.Service.PointSale.Repository.Action;
-using Microsoft.AspNetCore.Mvc;
+using Ict.Service.PointSale.RestAPI.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using System.Reflection;
+
+var nameAssembly = Assembly.GetExecutingAssembly().GetName().Name;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,21 +64,121 @@ builder.Services.AddScoped<IPointSaleRepository, PointSaleRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
 
+
+// версионность API
 builder.Services.AddApiVersioning(setup =>
 {
     setup.DefaultApiVersion = new ApiVersion(1, 0);
     setup.AssumeDefaultVersionWhenUnspecified = true;
     setup.ReportApiVersions = true;
+    setup.ApiVersionReader = ApiVersionReader.Combine(
+        new UrlSegmentApiVersionReader(),
+        new QueryStringApiVersionReader("version"));
+    //setup.ApiVersionReader = new QueryStringApiVersionReader
+    //{
+    //    ParameterNames = { "TEst" }
+    //};
+})
+.AddApiExplorer(setup =>
+{
+    setup.GroupNameFormat = "'v'VVV";
+    setup.SubstituteApiVersionInUrl = true;
+}); ;
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations();
+
+    //// рисует кнопку у swagger для аутентификации
+    //options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    //{
+    //    Type = SecuritySchemeType.OAuth2,
+    //    //BearerFormat = "JWT",
+    //    Flows = new OpenApiOAuthFlows
+    //    {
+    //        Password = new OpenApiOAuthFlow
+    //        {
+    //            TokenUrl = new Uri($"{builder.Configuration["OIDC:Authority"]}/connect/token"), //  "https://localhost:10001/connect/token"
+    //            Scopes = new Dictionary<string, string>()
+    //            {
+    //                { "VacancyAPI", "Vacancy API Service" },
+    //            },
+    //        },
+    //    },
+    //});
+
+    //// получение токена для доступа к API по имени
+    //options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new OpenApiSecurityScheme
+    //        {
+    //            Reference = new OpenApiReference
+    //            {
+    //                Type = ReferenceType.SecurityScheme,
+    //                Id = "oauth2"
+    //            },
+    //            Scheme = "oauth2",
+    //            Name = "Bearer",
+    //            In = ParameterLocation.Header,
+    //        },
+    //        new List<string>()
+    //    }
+    //});
 });
+
+// конфигурация для многоверсионности API в Swagger
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
+// добавить описания методов в swagger
+builder.Services.ConfigureSwaggerGen(options =>
+{
+    //базовый путь.
+    //var basePath = "";
+    var basePath = AppContext.BaseDirectory;
+    var xmlPath = Path.Combine(basePath, $"{nameAssembly}.xml");
+
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
+});
+
+
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("ShowSwagger", false))
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(c =>
+    {
+        // c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
+    });
+    app.UseSwaggerUI(
+        options =>
+        {
+            options.InjectStylesheet("/swagger-ui/custom.css"); // свой дизайн
+            options.DocumentTitle = "Swagger Law Converter";
+            options.RoutePrefix = "swagger";
+            //options.OAuthClientId(builder.Configuration["OIDC:ClientId"]);
+            //options.OAuthClientSecret(builder.Configuration["OIDC:ClientSecret"]);
+
+            //  options.DocExpansion(DocExpansion.List); // развернуть всё дерево
+            options.DocExpansion(DocExpansion.None); // развернуть всё дерево
+            options.DefaultModelRendering(ModelRendering.Model); // параметры показать как Shema
+            options.DefaultModelExpandDepth(0); //
+            options.DefaultModelsExpandDepth(-1); // убрать Schemas со страницы
+
+            // Динамически добавляем endpoints для каждой версии
+            var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+            foreach (var description in provider.ApiVersionDescriptions)
+            {
+                options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+            }
+        });
 }
 
 app.UseHttpsRedirection();

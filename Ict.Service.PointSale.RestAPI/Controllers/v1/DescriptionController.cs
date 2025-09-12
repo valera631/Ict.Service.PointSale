@@ -1,8 +1,7 @@
-﻿using Ict.ApiResults;
-using Ict.Service.PointSale.API.Abstractions.Models.Description;
+﻿using Asp.Versioning;
+using Ict.ApiResults;
 using Ict.Service.PointSale.API.Abstractions.Models.Update;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
-using Ict.Service.PointSale.Models.Description;
 using Ict.Service.PointSale.Models.Update;
 using Microsoft.AspNetCore.Mvc;
 

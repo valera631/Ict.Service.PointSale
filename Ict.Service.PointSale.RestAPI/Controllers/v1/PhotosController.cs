@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Asp.Versioning;
 using Ict.ApiResults;
 using Ict.Service.PointSale.API.Abstractions.Models.Photo;
 using Ict.Service.PointSale.Core.Abstractions.Interfaces;
